@@ -11,6 +11,7 @@
   import FileDrop from "svelte-tauri-filedrop"
   import Papa from "papaparse";
   import type { Course, Curriculum, Module } from "$lib/types/data";
+  import { curriculum } from "$lib/states/curriculum.svelte";
 
   let fileContent: string = "None"
   const readFile = async (path: string) => {
@@ -213,8 +214,11 @@
     // TODO: Parse file content to custom data structure
     const data = await parseFile(content);
     const courses = data.data;
-    const curriculum = parseToDataStructure(courses)
+    const parsedCurriculum = parseToDataStructure(courses)
     // TODO: Store data structure in a global svelte store
+    curriculum.credits = parsedCurriculum.credits;
+    curriculum.modules = parsedCurriculum.modules;
+    curriculum.courses = parsedCurriculum.courses;
   }
 </script>
 
@@ -224,7 +228,7 @@
   </div>
 </FileDrop>
 
-<p>{fileContent}</p>
+<p>{JSON.stringify(curriculum)}</p>
 
 <style>
 .dropzone {
