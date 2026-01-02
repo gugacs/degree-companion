@@ -7,40 +7,44 @@
 -->
 
 <script lang="ts">
-	import FileDrop from "svelte-tauri-filedrop"
+  import { resolveResource } from "@tauri-apps/api/path";
+  import { readTextFile, BaseDirectory, exists } from '@tauri-apps/plugin-fs';
+  import FileDrop from "svelte-tauri-filedrop"
 
-	let storedPaths: string[] = []
-	function open(paths: string[]) {
-	  if(paths.length != 1) return;
-	  storedPaths = paths;
-		// TODO: Open and read file content and return here again
-		// TODO: Parse file content to custom data structure
-		// TODO: Store data structure in a global svelte store
-	}
+  let fileContent: string = "None"
+  const open = async (paths: string[]) => {
+    if(paths.length != 1) return;
+    const path = paths[0];
+    // TODO: Open and read file content and return here again
+    try {
+      const resPath = await resolveResource(path);
+      const fileExists = await exists(resPath);
+      fileContent = fileExists ? "yes" : "no";
+      const content = await readTextFile(path);
+      fileContent = content;
+    } catch(error) {
+      fileContent = `Error: ${error}`;
+    }
+    // TODO: Parse file content to custom data structure
+    // TODO: Store data structure in a global svelte store
+  }
 </script>
 
 <FileDrop extensions={["csv"]} handleFiles={open} let:files>
-	<div class="dropzone" class:droppable={files.length == 1}>
-		<h2>Drop CSV files</h2>
-	</div>
+  <div class="dropzone" class:droppable={files.length == 1}>
+    <h2>Drop CSV files</h2>
+  </div>
 </FileDrop>
 
-{#if storedPaths.length > 0}
-  <h3>Dropped files:</h3>
-  <ul>
-    {#each storedPaths as path}
-      <li>{path}</li>
-    {/each}
-  </ul>
-{/if}
+<p>{fileContent}</p>
 
 <style>
-	.dropzone {
-		margin: 20px;
-		padding: 20px;
-		background: #eee;
-	}
-	.droppable {
-		background: #d6dff0;
-	}
+.dropzone {
+  margin: 20px;
+  padding: 20px;
+  background: #eee;
+}
+.droppable {
+  background: #d6dff0;
+}
 </style>
