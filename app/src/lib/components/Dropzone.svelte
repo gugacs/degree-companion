@@ -11,12 +11,16 @@
 
 	let storedPaths: string[] = []
 	function open(paths: string[]) {
+	  if(paths.length != 1) return;
 	  storedPaths = paths;
+		// TODO: Open and read file content and return here again
+		// TODO: Parse file content to custom data structure
+		// TODO: Store data structure in a global svelte store
 	}
 </script>
 
 <FileDrop extensions={["csv"]} handleFiles={open} let:files>
-	<div class="dropzone" class:droppable={files.length > 0}>
+	<div class="dropzone" class:droppable={files.length == 1}>
 		<h2>Drop CSV files</h2>
 	</div>
 </FileDrop>
