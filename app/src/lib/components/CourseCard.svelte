@@ -326,7 +326,7 @@
   }
 
   .course-popover-container {
-    width: 70vw;
+    width: fit-content;
     height: fit-content;
     max-height: 70vh;
     flex-direction: column;
