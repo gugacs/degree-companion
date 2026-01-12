@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Info, Pencil, CircleCheck, CircleX, CircleQuestionMark, X, GraduationCap, NotebookPen, Undo } from '@lucide/svelte';
+  import { Info, Pencil, CircleCheck, CircleX, CircleQuestionMark, X, GraduationCap, NotebookPen, Undo, Trash2 } from '@lucide/svelte';
   import { onMount } from 'svelte';
 
   let { course } =  $props();
@@ -95,12 +95,14 @@
   </div>
 
   <div class="action-wrapper">
-    <button class="action-button"
-            onclick={() => isEditing = !isEditing}>
+    <button onclick={() => isEditing = !isEditing}>
       <Pencil size="1rem" />
     </button>
-    <button class="action-button"
-            popovertarget={popoverId}>
+    <button>
+      <!-- TODO delete course entry at click here -->
+      <Trash2 size="1rem" />
+    </button>
+    <button popovertarget={popoverId}>
       <Info size="1rem" />
     </button>
   </div>
@@ -250,14 +252,7 @@
 
     .action-wrapper {
       display: flex;
-      gap: 0.75rem;
-
-      .action-button {
-        cursor: pointer;
-        border: none;
-        background: none;
-        padding: 0;
-      }
+      gap: 0.5rem;
     }
 
     .course-card-edit {
@@ -322,7 +317,7 @@
   }
 
   .course-popover-container {
-    width: 70vw;
+    width: fit-content;
     height: fit-content;
     max-height: 70vh;
     flex-direction: column;
