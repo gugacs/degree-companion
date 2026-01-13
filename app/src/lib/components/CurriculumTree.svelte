@@ -151,16 +151,85 @@
       nodes = [...headerNodes, ...newNodes];
       edges = newEdges;
     });
+
+    // variables for graph controls
+    let strokeWidth = $state(3);
+    let strokeColor = $state('#000000');
 </script>
 
-<div style:height="60rem">
-  <SvelteFlow bind:nodes bind:edges {nodeTypes} {edgeTypes} fitView>
-    <MiniMap />
-    <Controls />
-    <Background />
-  </SvelteFlow>
+<div class="graph-container">
+  <div class="controls">
+    <div class="stroke-control">
+      <p>Stroke Width</p>
+      <input type="range" min="0" max="10" bind:value={strokeWidth}/>
+      <p>{strokeWidth}</p>
+    </div>
+
+    <div class="color-control">
+      <p>Stroke Color</p>
+      <input type="color" bind:value={strokeColor}/>
+    </div>
+  </div>
+
+  <div style:height="90vh">
+    <SvelteFlow
+      bind:nodes
+      bind:edges
+      {nodeTypes}
+      {edgeTypes}
+      fitView
+      style="--stroke-width: {strokeWidth}; --stroke-color: {strokeColor};">
+      <MiniMap />
+      <Controls />
+      <Background />
+    </SvelteFlow>
+  </div>
 </div>
 
-<style>
 
+<style>
+  .graph-container {
+    margin-top: 1rem;
+  }
+
+  .controls {
+    width: 20rem;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    right: 0;
+    backdrop-filter: blur(1rem);
+    border-radius: 1rem;
+    z-index: 10;
+  }
+
+  .stroke-control {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem
+  }
+
+  .color-control {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  :global(.svelte-flow__edge-path) {
+    stroke: var(--stroke-color);
+    stroke-width: var(--stroke-width);
+  }
+  :global(.svelte-flow__edge.selected .svelte-flow__edge-path) {
+    stroke: black;
+  }
+  :global(.svelte-flow__edge-label) {
+    background: transparent;
+    backdrop-filter: blur(1rem);
+    border-radius: 0.5rem;
+    border: 0.1rem solid black;
+    padding: 0.5rem;
+  }
 </style>

@@ -40,18 +40,5 @@
 {/if}
 
 <style>
-  :global(.svelte-flow__edge-path) {
-    stroke: lightgray;
-    stroke-width: 2;
-  }
-  :global(.svelte-flow__edge.selected .svelte-flow__edge-path) {
-    stroke-width: 3;
-  }
-  :global(.svelte-flow__edge-label) {
-    background: transparent;
-    backdrop-filter: blur(4px);
-    border-radius: 0.5rem;
-    border: 0.1rem solid black;
-    padding: 0.5rem;
-  }
+
 </style>
