@@ -11,7 +11,7 @@
   import FileDrop from "svelte-tauri-filedrop"
   import Papa from "papaparse";
   import type { Course, Curriculum, Module } from "$lib/types/data";
-  import { curriculumStore } from "$lib/states/curriculum.svelte";
+  import { csv, curriculumStore } from "$lib/states/curriculum.svelte";
   import { FileDown } from "@lucide/svelte";
 
   const readFile = async (path: string) => {
@@ -202,8 +202,12 @@
     // TODO: Open and read file content and return here again
     const content = await readFile(path);
     if (!content) return;
+
     // TODO: Parse file content to custom data structure
     const data = await parseFile(content);
+    // stores raw csv for csv overview
+    csv.set(data);
+
     const courses = data.data;
     const parsedCurriculum = parseToDataStructure(courses)
     // TODO: Store data structure in a global svelte store
