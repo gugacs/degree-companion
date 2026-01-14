@@ -38,55 +38,111 @@
   $: droppedCsv = $csv?.data && $csv.data.length > 0;
 </script>
 
+<div class="table-wrapper">
+  {#if droppedCsv}
+    <h2>Overview of your file</h2>
 
-{#if droppedCsv}
-  <h2>Overview of your file</h2>
+    <div class="table-content">
+      <table {...$tableAttrs}>
+        <thead>
+        {#each $headerRows as headerRow (headerRow.id)}
+          <Subscribe rowAttrs={headerRow.attrs()} let:rowAttrs>
+            <tr {...rowAttrs}>
+              {#each headerRow.cells as cell (cell.id)}
+                <Subscribe attrs={cell.attrs()} let:attrs>
+                  <th {...attrs}>
+                    <Render of={cell.render()} />
+                  </th>
+                </Subscribe>
+              {/each}
+            </tr>
+          </Subscribe>
+        {/each}
+        </thead>
+        <tbody {...$tableBodyAttrs}>
+        {#each $rows as row (row.id)}
+          <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
+            <tr {...rowAttrs}>
+              {#each row.cells as cell (cell.id)}
+                <Subscribe attrs={cell.attrs()} let:attrs>
+                  <td {...attrs}>
+                    <Render of={cell.render()} />
+                  </td>
+                </Subscribe>
+              {/each}
+            </tr>
+          </Subscribe>
+        {/each}
+        </tbody>
+      </table>
+    </div>
 
-  <table {...$tableAttrs}>
-    <thead>
-    {#each $headerRows as headerRow (headerRow.id)}
-      <Subscribe rowAttrs={headerRow.attrs()} let:rowAttrs>
-        <tr {...rowAttrs}>
-          {#each headerRow.cells as cell (cell.id)}
-            <Subscribe attrs={cell.attrs()} let:attrs>
-              <th {...attrs}>
-                <Render of={cell.render()} />
-              </th>
-            </Subscribe>
-          {/each}
-        </tr>
-      </Subscribe>
-    {/each}
-    </thead>
-    <tbody {...$tableBodyAttrs}>
-    {#each $rows as row (row.id)}
-      <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-        <tr {...rowAttrs}>
-          {#each row.cells as cell (cell.id)}
-            <Subscribe attrs={cell.attrs()} let:attrs>
-              <td {...attrs}>
-                <Render of={cell.render()} />
-              </td>
-            </Subscribe>
-          {/each}
-        </tr>
-      </Subscribe>
-    {/each}
-    </tbody>
-  </table>
-
-  <a href="TODO">Continue</a>
-{/if}
+    <a href="TODO"
+       class="continue-button">
+      Continue
+    </a>
+  {/if}
+</div>
 
 <style>
+  .table-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+    container-type: size;
+    container-name: table-container;
+    width: 80vw;
+    height: 70vh;
+  }
+
+  .table-content {
+    width: 90cqw;
+    height: 70cqh;
+    overflow: auto;
+  }
+
+  .continue-button {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: white;
+    background-color: #007bff;
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .continue-button:hover {
+    transform: translateY(-0.2rem);
+  }
+
   table {
     border-spacing: 0;
     border-top: 1px solid black;
     border-left: 1px solid black;
   }
-  th, td {
+
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: lightgrey;
     border-bottom: 1px solid black;
     border-right: 1px solid black;
+    border-right: 1px solid black;
     padding: 0.5rem;
+  }
+
+  td {
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    font-size: 0.8rem;
+    font-weight: 500;
   }
 </style>
