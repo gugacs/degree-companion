@@ -77,9 +77,9 @@
       </table>
     </div>
 
-    <a href="TODO"
+    <a href="/graph"
        class="continue-button">
-      Continue
+      Go to graph visualization
     </a>
   {/if}
 </div>
