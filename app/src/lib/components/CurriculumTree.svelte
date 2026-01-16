@@ -153,7 +153,7 @@
     });
 
     // variables for graph controls
-    let strokeWidth = $state(3);
+    let strokeWidth = $state(2);
     let strokeColor = $state('#000000');
 </script>
 
@@ -161,7 +161,7 @@
   <div class="controls">
     <div class="stroke-control">
       <p>Stroke Width</p>
-      <input type="range" min="0" max="10" bind:value={strokeWidth}/>
+      <input type="range" min="1" max="10" bind:value={strokeWidth}/>
       <p>{strokeWidth}</p>
     </div>
 
