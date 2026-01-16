@@ -226,8 +226,6 @@
       // calculate the exact x-coordinate for that column
       const snappedX = closestColumnIndex * horizontalSpacing;
 
-      console.log(snappedX);
-
       nodes = nodes.map(node => {
         if (node.id === draggedNode.id) {
           return { ...node, position: { y: draggedNode.position.y, x: snappedX } }; // return a new node object with the updated x position
