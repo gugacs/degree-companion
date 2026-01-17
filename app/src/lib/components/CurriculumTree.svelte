@@ -223,61 +223,60 @@
       // calculate the closest column index based on the node's final x position
       const closestColumnIndex = Math.round(draggedNode.position.x / horizontalSpacing);
 
-      // calculate the exact x-coordinate for that column
-      const snappedX = closestColumnIndex * horizontalSpacing;
-      const droppedY = draggedNode.position.y;
-
       // get the list of semesters by looking at the header nodes already on the graph
       const sortedHeaders = nodes
         .filter(n => n.type === 'header')
         .sort((a, b) => a.position.x - b.position.x);
 
-      if (closestColumnIndex < 0 || closestColumnIndex >= sortedHeaders.length) {
-        return;
-      }
-
-      const newHeaderNode = sortedHeaders[closestColumnIndex];
-      const newSemester = parseInt(newHeaderNode.id.replace('header-', ''));
-
-      // find the course and old semester
       const courseToMove = draggedNode.data.lv;
       const courseInStore = $curriculumStore.courses.find(c => c.id === courseToMove.id);
       if (!courseInStore) return;
 
-      const oldSemester = parseInt(courseInStore.recommended_semester);
+      if (closestColumnIndex >= sortedHeaders.length) {
+        const highestSemester = sortedHeaders.reduce((max, header) => {
+          const semesterNum = parseInt(header.id.replace('header-', ''));
+          return Math.max(max, semesterNum);
+        }, 0);
 
-      if (newSemester === oldSemester) {
+        const newSemester = highestSemester + 1;
+
+        courseInStore.recommended_semester = newSemester.toString();
+
+        $curriculumStore.courses = [...$curriculumStore.courses];
+      }
+      else {
+        const snappedX = closestColumnIndex * horizontalSpacing; // calculate the exact x-coordinate for that column
+        const droppedY = draggedNode.position.y;
+
+        const newHeaderNode = sortedHeaders[closestColumnIndex];
+        const newSemester = parseInt(newHeaderNode.id.replace('header-', ''));
+        const oldSemester = parseInt(courseInStore.recommended_semester);
+
+        if (newSemester === oldSemester) {
+          nodes = nodes.map(node =>
+            node.id === draggedNode.id ? { ...node, position: { x: snappedX, y: droppedY } } : node
+          );
+          return;
+        }
+
+        const courseCredits = parseFloat(courseToMove.credits || 0);
         nodes = nodes.map(node => {
           if (node.id === draggedNode.id) {
-            // Only the Y position might have changed
             return { ...node, position: { x: snappedX, y: droppedY } };
+          }
+          if (node.id === `header-${oldSemester}`) {
+            const newECTS = (node.data.semesterECTS || 0) - courseCredits;
+            return { ...node, data: { ...node.data, semesterECTS: newECTS } };
+          }
+          if (node.id === `header-${newSemester}`) {
+            const newECTS = (node.data.semesterECTS || 0) + courseCredits;
+            return { ...node, data: { ...node.data, semesterECTS: newECTS } };
           }
           return node;
         });
-        return;
+
+        courseInStore.recommended_semester = newSemester.toString();
       }
-
-      // update node position and ECTS in headers
-      const courseCredits = parseFloat(courseToMove.credits || 0);
-
-      nodes = nodes.map(node => {
-        if (node.id === draggedNode.id) {
-          return { ...node, position: { x: snappedX, y: droppedY } };
-        }
-
-        if (node.id === `header-${oldSemester}`) {
-          const newECTS = (node.data.semesterECTS || 0) - courseCredits;
-          return { ...node, data: { ...node.data, semesterECTS: newECTS } };
-        }
-
-        if (node.id === `header-${newSemester}`) {
-          const newECTS = (node.data.semesterECTS || 0) + courseCredits;
-          return { ...node, data: { ...node.data, semesterECTS: newECTS } };
-        }
-        return node;
-      });
-
-      courseInStore.recommended_semester = newSemester.toString();
     }
 
     // variables for graph controls
