@@ -1,7 +1,5 @@
 <script lang="ts">
   import Dropzone from "$lib/components/Dropzone.svelte";
-  import CourseList from "$lib/components/CourseList.svelte";
-  import Legend from "$lib/components/Legend.svelte";
   import { invoke } from "@tauri-apps/api/core";
   import CourseListTable from "$lib/components/CourseListTable.svelte";
 

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { csv } from "\$lib/states/curriculum.svelte";
   import { createTable, Subscribe, Render } from '@humanspeak/svelte-headless-table';
+  import { MoveRight } from '@lucide/svelte';
   import { readable } from "svelte/store";
 
   let table;
@@ -80,6 +81,7 @@
     <a href="/graph"
        class="continue-button">
       Go to graph visualization
+      <MoveRight size="0.9rem"/>
     </a>
   {/if}
 </div>
