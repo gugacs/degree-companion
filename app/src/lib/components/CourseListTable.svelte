@@ -102,6 +102,9 @@
     width: 90cqw;
     height: 70cqh;
     overflow: auto;
+    border: 3px solid lightgrey;
+    border-radius: 1rem;
+    padding: 0.5rem;
   }
 
   .continue-button {

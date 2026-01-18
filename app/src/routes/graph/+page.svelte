@@ -17,12 +17,17 @@
     <Legend/>
   </div>
 
-  <CurriculumTree/>
+  <div class="graph-content">
+    <CurriculumTree/>
+  </div>
 </div>
 
 
 <style>
   .graph-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
     padding: 1rem;
   }
 
@@ -49,5 +54,11 @@
 
   .back-button:hover {
     transform: translateY(-0.2rem);
+  }
+
+  .graph-content {
+    border: 3px solid lightgrey;
+    border-radius: 1rem;
+    padding: 0.5rem;
   }
 </style>

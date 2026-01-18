@@ -153,7 +153,7 @@
     });
 </script>
 
-<div style:height="60rem">
+<div style:height="80vh">
   <SvelteFlow bind:nodes bind:edges {nodeTypes} {edgeTypes} fitView>
     <MiniMap />
     <Controls />
