@@ -77,9 +77,9 @@
       </table>
     </div>
 
-    <a href="/graph"
+    <a href="/onboarding"
        class="continue-button">
-      Go to graph visualization
+        Continue to Onboarding
     </a>
   {/if}
 </div>
