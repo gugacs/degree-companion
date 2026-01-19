@@ -8,6 +8,13 @@
     import HorizontalSeparatorNode from "$lib/components/HorizontalSeparatorNode.svelte";
     import VerticalSeparatorNode from "$lib/components/VerticalSeparatorNode.svelte";
 
+    // variables for graph controls
+    let {
+      strokeWidth,
+      strokeColor,
+      electiveModules
+    }: SvelteFlow = $props();
+
     const nodeTypes = {
       custom: CustomNode,
       header: SemesterNode,
@@ -22,11 +29,11 @@
     const horizontalSpacing = 500;
 
     $effect(() => {
-      const showElectiveModules = false; // default: false
+      const showElectiveModules = true; // default: false
       const columnHeaderYPosition = -200;
 
       // filter if the elective modules should be shown or not
-      const filteredCourses = showElectiveModules
+      const filteredCourses = electiveModules
         ? $curriculumStore.courses
         : $curriculumStore.courses.filter(course => {
           const semester = parseInt(course.recommended_semester);
@@ -278,74 +285,25 @@
         courseInStore.recommended_semester = newSemester.toString();
       }
     }
-
-    // variables for graph controls
-    let strokeWidth = $state(2);
-    let strokeColor = $state('#000000');
 </script>
 
-<div class="graph-container">
-  <div class="controls">
-    <div class="stroke-control">
-      <p>Stroke Width</p>
-      <input type="range" min="1" max="10" bind:value={strokeWidth}/>
-      <p>{strokeWidth}</p>
-    </div>
-
-    <div class="color-control">
-      <p>Stroke Color</p>
-      <input type="color" bind:value={strokeColor}/>
-    </div>
-  </div>
-
-  <div style:height="80vh">
-    <SvelteFlow
-      bind:nodes
-      bind:edges
-      {nodeTypes}
-      {edgeTypes}
-      fitView
-      style="--stroke-width: {strokeWidth}; --stroke-color: {strokeColor};"
-      onnodedragstop={handleNodeDragStop}>
-      <MiniMap />
-      <Controls />
-      <Background />
-    </SvelteFlow>
-  </div>
+<div style:height="80vh">
+  <SvelteFlow
+    bind:nodes
+    bind:edges
+    {nodeTypes}
+    {edgeTypes}
+    fitView
+    style="--stroke-width: {strokeWidth}; --stroke-color: {strokeColor};"
+    onnodedragstop={handleNodeDragStop}>
+    <MiniMap />
+    <Controls />
+    <Background />
+  </SvelteFlow>
 </div>
 
 
 <style>
-  .graph-container {
-    margin-top: 1rem;
-  }
-
-  .controls {
-    width: 20rem;
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 0;
-    right: 0;
-    backdrop-filter: blur(1rem);
-    border-radius: 1rem;
-    z-index: 10;
-  }
-
-  .stroke-control {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 1rem
-  }
-
-  .color-control {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 1rem;
-  }
-
   :global(.svelte-flow__edge-path) {
     stroke: var(--stroke-color);
     stroke-width: var(--stroke-width);
