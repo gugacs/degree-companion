@@ -5,10 +5,15 @@
 
   let degreeType: 'bachelor' | 'master' = 'bachelor';
   let startSemester: 'winter' | 'summer' = 'winter';
+  let bachelorECTS = 180;
+  let masterECTS = 120;
+
+  $: totalECTS = degreeType === 'bachelor' ? bachelorECTS : masterECTS;
 
   const handleSubmit = () => {
     curriculumStore.update(curr => ({
       ...curr,
+      credits: totalECTS,
       degreeType: degreeType,
       startSemester: startSemester
     }));
@@ -41,6 +46,37 @@
               </div>
             </label>
           {/each}
+        </div>
+      </section>
+
+      <!-- Starting Semester Section -->
+      <section>
+        <h2>Starting Semester</h2>
+        <p class="desc">When do you begin your studies?</p>
+        <div class="radio-group">
+          {#each [['winter', 'Winter Semester', 'Start in fall/autumn'], ['summer', 'Summer Semester', 'Start in spring']] as [value, title, desc]}
+            <label class="radio-card" class:selected={startSemester === value}>
+              <input type="radio" name="semester" {value} bind:group={startSemester} />
+              <div>
+                <strong>{title}</strong>
+                <small>{desc}</small>
+              </div>
+            </label>
+          {/each}
+        </div>
+      </section>
+
+      <!-- Total ECTS Section -->
+      <section>
+        <h2>Total ECTS Credits</h2>
+        <p class="desc">How many ECTS credits are required for the entire curriculum?</p>
+        <div class="input-group">
+          {#if degreeType === 'bachelor'}
+            <input type="number" min="1" bind:value={bachelorECTS} placeholder="e.g., 180" />
+          {:else}
+            <input type="number" min="1" bind:value={masterECTS} placeholder="e.g., 120" />
+          {/if}
+          <span>ECTS</span>
         </div>
       </section>
 
@@ -157,6 +193,33 @@
   .radio-card small {
     font-size: 0.85rem;
     color: #7f8c8d;
+  }
+
+  .input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 18.75rem;
+  }
+
+  .input-group span {
+    font-weight: 600;
+    color: #7f8c8d;
+    font-size: 0.85rem;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 0.5rem;
+    background: white;
+    font-size: 0.9rem;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: #007bff;
   }
 
   .submit-btn {
