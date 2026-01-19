@@ -110,7 +110,11 @@
                 x: columnIndex * horizontalSpacing,
                 y: rowIndex * verticalSpacing
               },
-              data: { label: course.name, lv: course },
+              data: {
+                label: course.name,
+                lv: course,
+                onDelete: () => deleteCourse(course.id),
+              },
             };
           });
         });
@@ -282,6 +286,11 @@
     // variables for graph controls
     let strokeWidth = $state(2);
     let strokeColor = $state('#000000');
+
+    const deleteCourse = (courseId: string) => {
+      $curriculumStore.courses = $curriculumStore.courses.filter(c => c.id !== courseId);
+    };
+
 </script>
 
 <div class="graph-container">
