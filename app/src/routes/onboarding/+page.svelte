@@ -55,6 +55,10 @@
   };
 </script>
 
+<!-- ============================================================================ -->
+<!-- MAIN CONTENT -->
+<!-- ============================================================================ -->
+
 <main>
   <button class="back-btn" on:click={() => goto('/')}>
     <ArrowLeft size={20} />
@@ -195,6 +199,7 @@
         </section>
       {/if}
 
+      <!-- Submit Button -->
       <button type="submit" class="submit-btn" disabled={!canSubmit}>
         Finish Onboarding
       </button>
@@ -202,14 +207,43 @@
   </div>
 </main>
 
+<!-- ============================================================================ -->
+<!-- STYLES -->
+<!-- ============================================================================ -->
+
 <style>
+  /* CSS Custom Colour Properties */
+  :root {
+    --color-primary: #007bff;
+    --color-text: light-dark(#0f0f0f, #f6f6f6);
+    --color-text-muted: #7f8c8d;
+    --color-border: light-dark(#e0e0e0, #4a4a4a);
+    --color-border-hover: light-dark(#999, #999);
+    --color-bg-card: light-dark(#fff, #3a3a3a);
+    --color-bg-main: light-dark(#f6f6f6, #2f2f2f);
+    --color-bg-hover: light-dark(#f0f8ff, #1a3a5a);
+    --color-bg-selected: light-dark(#e3f2fd, #1a3a5a);
+    --color-bg-module: light-dark(#f8f9fa, #2a2a2a);
+    --color-bg-radio: light-dark(#fafafa, #2a2a2a);
+    --color-disabled: light-dark(#bbb, #666);
+    --shadow-sm: 0 0.25rem 0.375rem light-dark(rgba(0, 0, 0, 0.07), rgba(0, 0, 0, 0.2));
+    --shadow-focus: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    --shadow-btn: 0 0.25rem 0.375rem rgba(0, 123, 255, 0.3);
+    --shadow-btn-hover: 0 0.375rem 0.75rem rgba(0, 123, 255, 0.4);
+  }
+
+  /* Main Layout */
   main {
     min-height: 100vh;
     padding: 2rem;
-    background: #f6f6f6;
+    background: var(--color-bg-main);
+    color: var(--color-text);
     font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
   }
 
+  /* Back Button */
   .back-btn {
     position: fixed;
     top: 2rem;
@@ -218,18 +252,28 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: white;
-    border: 1px solid #e0e0e0;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
     border-radius: 0.5rem;
     cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    z-index: 100;
   }
 
+  .back-btn:hover {
+    border-color: var(--color-border-hover);
+    transform: translateX(-0.125rem);
+  }
+
+  /* Content Container */
   .content {
     max-width: 56rem;
     margin: 0 auto;
     padding-top: 2rem;
   }
 
+  /* Typography */
   h1 {
     text-align: center;
     font-size: 2.5rem;
@@ -238,7 +282,7 @@
 
   .subtitle {
     text-align: center;
-    color: #7f8c8d;
+    color: var(--color-text-muted);
     font-size: 1.1rem;
     margin-bottom: 3rem;
   }
@@ -249,22 +293,28 @@
   }
 
   .desc {
-    color: #7f8c8d;
+    color: var(--color-text-muted);
     font-size: 0.95rem;
     margin-bottom: 1.5rem;
   }
 
+  /* Form Container */
   form {
-    background: white;
+    background: var(--color-bg-card);
     border-radius: 1rem;
     padding: 2.5rem;
-    box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.07);
+    box-shadow: var(--shadow-sm);
   }
 
   section {
     margin-bottom: 3rem;
   }
 
+  section:last-of-type {
+    margin-bottom: 2rem;
+  }
+
+  /* Radio Button Groups */
   .radio-group {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
@@ -274,19 +324,22 @@
   .radio-card {
     position: relative;
     padding: 1.5rem;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--color-border);
     border-radius: 0.75rem;
     cursor: pointer;
-    background: #fafafa;
+    transition: all 0.2s;
+    background: var(--color-bg-radio);
   }
 
   .radio-card:hover {
-    border-color: #007bff;
+    border-color: var(--color-primary);
+    background: var(--color-bg-hover);
   }
 
   .radio-card.selected {
-    border-color: #007bff;
-    background: #e3f2fd;
+    border-color: var(--color-primary);
+    background: var(--color-bg-selected);
+    box-shadow: var(--shadow-focus);
   }
 
   .radio-card input {
@@ -307,15 +360,17 @@
 
   .radio-card small {
     font-size: 0.85rem;
-    color: #7f8c8d;
+    color: var(--color-text-muted);
   }
 
+  /* Grid Layout */
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
     gap: 1.5rem;
   }
 
+  /* Form Labels */
   label {
     font-weight: 600;
     font-size: 0.95rem;
@@ -323,27 +378,58 @@
     margin-bottom: 0.5rem;
   }
 
+  /* Select Dropdown */
   .select-wrapper {
     position: relative;
   }
 
-  select {
+  .select-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    width: 0;
+    height: 0;
+    border-left: 0.3rem solid transparent;
+    border-right: 0.3rem solid transparent;
+    border-top: 0.4rem solid var(--color-text-muted);
+    pointer-events: none;
+  }
+
+  /* Input Fields */
+  select, input[type="number"] {
     width: 100%;
     padding: 0.5rem 0.75rem;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--color-border);
     border-radius: 0.5rem;
-    background: white;
+    background: var(--color-bg-card);
+    color: inherit;
     font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+
+  select {
     cursor: pointer;
     appearance: none;
     padding-right: 2.5rem;
   }
 
-  select:focus {
+  select:focus, input:focus {
     outline: none;
-    border-color: #007bff;
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-focus);
   }
 
+  select option[value=""] {
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  select option:disabled {
+    color: var(--color-disabled);
+  }
+
+  /* Input Groups */
   .input-group {
     display: flex;
     align-items: center;
@@ -358,38 +444,21 @@
 
   .input-group span {
     font-weight: 600;
-    color: #7f8c8d;
+    color: var(--color-text-muted);
     font-size: 0.85rem;
+    white-space: nowrap;
   }
 
-  input[type="number"] {
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 0.5rem;
-    background: white;
-    font-size: 0.9rem;
-  }
-
-  input:focus {
-    outline: none;
-    border-color: #007bff;
-  }
-
-  input:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
+  /* Module Rows */
   .module-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
     padding: 1rem;
-    background: #f8f9fa;
+    background: var(--color-bg-module);
     border-radius: 0.5rem;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--color-border);
     margin-bottom: 1rem;
   }
 
@@ -398,18 +467,29 @@
     flex-direction: column;
     gap: 0.25rem;
     flex: 1;
+    min-width: 0;
   }
 
   .module-info strong {
     font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .module-info small {
     font-size: 0.85rem;
-    color: #7f8c8d;
+    color: var(--color-text-muted);
     font-family: monospace;
   }
 
+  /* Disabled State */
+  input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Submit Button */
   .submit-btn {
     display: block;
     margin: 2rem auto 0;
@@ -417,14 +497,28 @@
     font-size: 1.1rem;
     font-weight: 600;
     color: white;
-    background: #007bff;
+    background: var(--color-primary);
     border: none;
     border-radius: 1rem;
     cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-btn);
+  }
+
+  .submit-btn:hover:not(:disabled) {
+    transform: translateY(-0.2rem);
+    box-shadow: var(--shadow-btn-hover);
   }
 
   .submit-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 48rem) {
+    h1 { font-size: 2rem; }
+    form { padding: 1.5rem; }
+    .grid { grid-template-columns: 1fr; }
   }
 </style>
