@@ -289,10 +289,24 @@
     let strokeColor = $state('#000000');
 
     const deleteCourse = (courseId: string) => {
-      $curriculumStore.courses = $curriculumStore.courses.filter(c => c.id !== courseId);
+      const course = $curriculumStore.courses.find(c => c.id === courseId);
+      if (course) {
+        course.recommended_semester = "0";
+
+        $curriculumStore.courses = [...$curriculumStore.courses];
+      }
     };
 
     let courseToAdd = $state('');
+
+    const availableCourses = $derived(
+      $curriculumStore.courses
+        .filter(c => {
+          const sem = parseInt(c.recommended_semester);
+          return isNaN(sem) || sem === 0;
+        })
+        .sort((a, b) => a.name.localeCompare(b.name))
+    );
 
     const addCourse = (courseId: string) => {
       if (!courseId) return;
@@ -322,7 +336,7 @@
       <label>Add Course</label>
       <select bind:value={courseToAdd}>
         <option value="" disabled>Select Course...</option>
-        {#each $curriculumStore.courses.sort((a,b) => a.name > b.name) as c}
+        {#each availableCourses.sort((a,b) => a.name > b.name) as c}
           <option value={c.id}>
             {c.name} {c.type} ({c.credits})
           </option>
