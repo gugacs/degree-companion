@@ -8,13 +8,19 @@
   let bachelorECTS = 180;
   let masterECTS = 120;
   let moduleECTS: Record<string, number | ''> = {};
+  let majorModule = '';
+  let minorModule = '';
+  let majorECTS: number | '' = 0;
+  let minorECTS: number | '' = 0;
 
   $: totalECTS = degreeType === 'bachelor' ? bachelorECTS : masterECTS;
+  $: majorModuleName = $curriculumStore.modules.find(m => m.code === majorModule)?.name || 'Major Module';
+  $: minorModuleName = $curriculumStore.modules.find(m => m.code === minorModule)?.name || 'Minor Module';
 
   $: if ($curriculumStore.modules) {
     $curriculumStore.modules.forEach(m => {
       if (!(m.code in moduleECTS)) {
-        moduleECTS[m.code] = '';
+        moduleECTS[m.code] = 0;
       }
     });
   }
@@ -24,7 +30,9 @@
         const val = moduleECTS[m.code];
         return typeof val === 'number' && val > 0;
       })
-    : masterECTS > 0;
+    : masterECTS > 0 && majorModule && minorModule && majorModule !== minorModule && 
+      typeof majorECTS === 'number' && majorECTS > 0 && 
+      typeof minorECTS === 'number' && minorECTS > 0;
 
   const handleSubmit = () => {
     curriculumStore.update(curr => ({
@@ -32,9 +40,15 @@
       credits: totalECTS,
       degreeType: degreeType,
       startSemester: startSemester,
+      majorModule: degreeType === 'master' ? majorModule : '',
+      minorModule: degreeType === 'master' ? minorModule : '',
       modules: curr.modules.map(module => ({
         ...module,
-        credits: (typeof moduleECTS[module.code] === 'number' ? moduleECTS[module.code] : module.credits) as number
+        credits: (degreeType === 'bachelor' 
+          ? (typeof moduleECTS[module.code] === 'number' ? moduleECTS[module.code] : 0)
+          : module.code === majorModule ? (typeof majorECTS === 'number' ? majorECTS : 0)
+          : module.code === minorModule ? (typeof minorECTS === 'number' ? minorECTS : 0)
+          : module.credits) as number
       }))
     }));
     goto('/graph');
@@ -117,6 +131,67 @@
               </div>
             </div>
           {/each}
+        </section>
+      {/if}
+
+      <!-- Master's Degree Sections -->
+      {#if degreeType === 'master' && $curriculumStore.modules.length}
+        <!-- Major and Minor Selection -->
+        <section>
+          <h2>Major and Minor Modules</h2>
+          <p class="desc">Select which module is your Major and which is your Minor</p>
+          <div class="grid">
+            <div class="select-wrapper">
+              <label>Major Module</label>
+              <select bind:value={majorModule}>
+                <option value="" disabled>Select Major...</option>
+                {#each $curriculumStore.modules as m}
+                  <option value={m.code} disabled={m.code === minorModule}>
+                    {m.name} ({m.code})
+                  </option>
+                {/each}
+              </select>
+            </div>
+            <div class="select-wrapper">
+              <label>Minor Module</label>
+              <select bind:value={minorModule}>
+                <option value="" disabled>Select Minor...</option>
+                {#each $curriculumStore.modules as m}
+                  <option value={m.code} disabled={m.code === majorModule}>
+                    {m.name} ({m.code})
+                  </option>
+                {/each}
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- ECTS for Major and Minor -->
+        <section>
+          <h2>ECTS for Major and Minor</h2>
+          <p class="desc">Specify the ECTS credits for your Major and Minor modules</p>
+          <div class="grid">
+            <div class="module-row">
+              <div class="module-info">
+                <strong>{majorModuleName}</strong>
+                <small>{majorModule || 'Not selected'}</small>
+              </div>
+              <div class="input-group small">
+                <input type="number" bind:value={majorECTS} disabled={!majorModule} />
+                <span>ECTS</span>
+              </div>
+            </div>
+            <div class="module-row">
+              <div class="module-info">
+                <strong>{minorModuleName}</strong>
+                <small>{minorModule || 'Not selected'}</small>
+              </div>
+              <div class="input-group small">
+                <input type="number" bind:value={minorECTS} disabled={!minorModule} />
+                <span>ECTS</span>
+              </div>
+            </div>
+          </div>
         </section>
       {/if}
 
@@ -235,6 +310,40 @@
     color: #7f8c8d;
   }
 
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.5rem;
+  }
+
+  label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .select-wrapper {
+    position: relative;
+  }
+
+  select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 0.5rem;
+    background: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    appearance: none;
+    padding-right: 2.5rem;
+  }
+
+  select:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+
   .input-group {
     display: flex;
     align-items: center;
@@ -265,6 +374,11 @@
   input:focus {
     outline: none;
     border-color: #007bff;
+  }
+
+  input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .module-row {
