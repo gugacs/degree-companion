@@ -78,9 +78,9 @@
       </table>
     </div>
 
-    <a href="/graph"
+    <a href="/onboarding"
        class="continue-button">
-      Go to graph visualization
+        Continue to Onboarding
       <MoveRight size="0.9rem"/>
     </a>
   {/if}
