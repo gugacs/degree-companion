@@ -316,34 +316,34 @@
 
 
 <style>
-  .graph-container {
-    margin-top: 1rem;
-  }
-
   .controls {
-    width: 20rem;
     display: flex;
     flex-direction: column;
     position: absolute;
-    top: 0;
-    right: 0;
+    top: auto;
+    right: 2rem;
     backdrop-filter: blur(1rem);
     border-radius: 1rem;
     z-index: 10;
+    margin: 1rem;
+    font-size: 0.8rem;
+    border: 3px solid lightgrey;
   }
 
   .stroke-control {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 1rem
+    padding: 0.3rem 0.5rem;
+    gap: 0.3rem;
   }
 
   .color-control {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 1rem;
+    padding: 0.3rem 0.5rem;
+    gap: 0.3rem;
   }
 
   :global(.svelte-flow__edge-path) {
