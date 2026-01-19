@@ -1,5 +1,7 @@
 export type Availability = "W" | "S" | "B";
 export type Frequency = "yearly" | "biyearly";
+export type DegreeType = 'bachelor' | 'master';
+export type StartSemester = 'winter' | 'summer';
 
 export interface Module {
   code: string;
@@ -30,4 +32,8 @@ export interface Curriculum {
   credits: number;
   modules: Module[];
   courses: Course[];
+  degreeType: DegreeType;
+  startSemester: StartSemester;
+  majorModule: string;  // Module code
+  minorModule: string;  // Module code
 }

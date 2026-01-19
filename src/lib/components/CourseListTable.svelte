@@ -78,9 +78,8 @@
       </table>
     </div>
 
-    <a href="/graph"
-       class="continue-button">
-      Go to graph visualization
+    <a href="/onboarding" class="continue-button">
+      Continue to Onboarding
       <MoveRight size="0.9rem"/>
     </a>
   {/if}
@@ -108,7 +107,9 @@
   }
 
   .continue-button {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-top: 1.5rem;
     padding: 0.75rem 2rem;
     font-weight: 600;
