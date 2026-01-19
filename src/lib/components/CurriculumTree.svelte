@@ -1,5 +1,6 @@
 <script lang="ts">
     import { SvelteFlow, MiniMap, Controls, Background, type Node } from '@xyflow/svelte';
+    import { Plus } from '@lucide/svelte';
     import '@xyflow/svelte/dist/style.css';
     import { curriculumStore } from "$lib/states/curriculum.svelte";
     import CustomNode from "$lib/components/CustomNode.svelte";
@@ -110,7 +111,11 @@
                 x: columnIndex * horizontalSpacing,
                 y: rowIndex * verticalSpacing
               },
-              data: { label: course.name, lv: course },
+              data: {
+                label: course.name,
+                lv: course,
+                onDelete: () => deleteCourse(course.id),
+              },
             };
           });
         });
@@ -282,9 +287,69 @@
     // variables for graph controls
     let strokeWidth = $state(2);
     let strokeColor = $state('#000000');
+
+    const deleteCourse = (courseId: string) => {
+      const course = $curriculumStore.courses.find(c => c.id === courseId);
+      if (course) {
+        course.recommended_semester = "0";
+
+        $curriculumStore.courses = [...$curriculumStore.courses];
+      }
+    };
+
+    let courseToAdd = $state('');
+
+    const availableCourses = $derived(
+      $curriculumStore.courses
+        .filter(c => {
+          const sem = parseInt(c.recommended_semester);
+          return isNaN(sem) || sem === 0;
+        })
+        .sort((a, b) => a.name.localeCompare(b.name))
+    );
+
+    const addCourse = (courseId: string) => {
+      if (!courseId) return;
+
+      const highestSemester = $curriculumStore.courses.reduce((max, course) => {
+        const sem = parseInt(course.recommended_semester);
+        return isNaN(sem) ? max : Math.max(max, sem);
+      }, 1);
+
+      const course = $curriculumStore.courses.find(c => c.id === courseId);
+
+      if (course) {
+        course.recommended_semester = highestSemester.toString();
+
+        $curriculumStore.courses = [...$curriculumStore.courses];
+      }
+
+      courseToAdd = '';
+    };
+
+
 </script>
 
-<div class="graph-container">
+<div class="graph-wrapper">
+  <div class="add-course">
+    <form class="select-wrapper">
+      <label>Add Course</label>
+      <select bind:value={courseToAdd}>
+        <option value="" disabled>Select Course...</option>
+        {#each availableCourses.sort((a,b) => a.name > b.name) as c}
+          <option value={c.id}>
+            {c.name} {c.type} ({c.credits})
+          </option>
+        {/each}
+      </select>
+    </form>
+
+    <button class="add-course-btn"
+            onclick={() => addCourse(courseToAdd)}>
+      <Plus size="1rem" />
+    </button>
+  </div>
+
   <div class="controls">
     <div class="stroke-control">
       <p>Stroke Width</p>
@@ -298,7 +363,7 @@
     </div>
   </div>
 
-  <div style:height="80vh">
+  <div class="tree-wrapper">
     <SvelteFlow
       bind:nodes
       bind:edges
@@ -316,34 +381,82 @@
 
 
 <style>
-  .graph-container {
-    margin-top: 1rem;
+  .tree-wrapper {
+    border: 3px solid lightgrey;
+    border-radius: 1rem;
+    padding: 0.5rem;
+    height: 80vh;
+  }
+
+  .add-course {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+
+    /* Select Dropdown */
+    .select-wrapper {
+      position: relative;
+    }
+
+    .select-wrapper::after {
+      content: '';
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+      width: 0;
+      height: 0;
+      border-left: 0.3rem solid transparent;
+      border-right: 0.3rem solid transparent;
+      border-top: 0.4rem solid var(--color-text-muted);
+      pointer-events: none;
+    }
+
+    .add-course-btn {
+      border: none;
+      color: white;
+      border-radius: 1rem;
+      cursor: pointer;
+      background-color: var(--color-primary);
+      transition: all 0.2s ease-in-out;
+    }
+
+    .add-course-btn:hover {
+      transform: translateY(-0.2rem);
+    }
   }
 
   .controls {
-    width: 20rem;
     display: flex;
     flex-direction: column;
     position: absolute;
-    top: 0;
-    right: 0;
+    top: auto;
+    right: 2rem;
     backdrop-filter: blur(1rem);
     border-radius: 1rem;
     z-index: 10;
+    margin: 1rem;
+    font-size: 0.8rem;
+    border: 3px solid lightgrey;
   }
 
   .stroke-control {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 1rem
+    padding: 0.3rem 0.5rem;
+    gap: 0.3rem;
   }
 
   .color-control {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 1rem;
+    padding: 0.3rem 0.5rem;
+    gap: 0.3rem;
   }
 
   :global(.svelte-flow__edge-path) {

@@ -2,7 +2,7 @@
   import { Info, Pencil, CircleCheck, CircleX, CircleQuestionMark, X, GraduationCap, NotebookPen, Undo, Trash2 } from '@lucide/svelte';
   import { onMount } from 'svelte';
 
-  let { course } =  $props();
+  let { course, onDelete } =  $props();
 
   const COLOR_DEFAULT = "lightgrey";
   const COLOR_WORK = "#B7EBE8";
@@ -69,7 +69,7 @@
 </script>
 
 <div class="course-card-wrapper" style="--course-background-color: {color}">
-  <h1>{name}</h1>
+  <h1 style="text-wrap: wrap">{name}</h1>
 
   <div class="short-info-container">
     <div class="short-info-item">
@@ -95,14 +95,16 @@
   </div>
 
   <div class="action-wrapper">
-    <button onclick={() => isEditing = !isEditing}>
+    <button style="cursor: pointer"
+            onclick={() => isEditing = !isEditing}>
       <Pencil size="1rem" />
     </button>
-    <button>
-      <!-- TODO delete course entry at click here -->
+    <button style="cursor: pointer"
+            onclick={() => onDelete()}>
       <Trash2 size="1rem" />
     </button>
-    <button popovertarget={popoverId}>
+    <button style="cursor: pointer"
+            popovertarget={popoverId}>
       <Info size="1rem" />
     </button>
   </div>
