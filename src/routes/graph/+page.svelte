@@ -1,7 +1,7 @@
 <script lang="ts">
   import CurriculumTree from "$lib/components/CurriculumTree.svelte";
   import Legend from "$lib/components/Legend.svelte";
-  import {MoveLeft, MoveRight} from '@lucide/svelte';
+  import {ArrowLeft} from '@lucide/svelte';
 
 </script>
 
@@ -10,7 +10,7 @@
   <div class="header">
     <a href="/"
        class="back-button">
-      <MoveLeft size="0.9rem"/>
+      <ArrowLeft size="0.9rem"/>
       Back to data drop
     </a>
 
@@ -40,7 +40,7 @@
 
   .back-button {
     display: inline-block;
-    padding: 0.75rem 2rem;
+    padding: 0.75rem 1.5rem;
     font-weight: 600;
     text-decoration: none;
     color: white;
