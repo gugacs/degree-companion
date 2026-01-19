@@ -18,7 +18,6 @@ git clone git@github.com:gugacs/degree-companion.git
 cd degree-companion # Ensure you are in the project root
 
 # Prepare the app
-cd app
 bun install # OR: npm install
 ```
 
@@ -33,14 +32,7 @@ bun install # OR: npm install
 
 ```bash
 # Terminal 1: Start App
-cd app # Ensure you are in the project root
 bun run tauri dev # New application window should open
-```
-
-**Production Mode**
-
-```bash
-# TODO
 ```
 
 ## 📝 License
