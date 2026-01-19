@@ -7,15 +7,35 @@
   let startSemester: 'winter' | 'summer' = 'winter';
   let bachelorECTS = 180;
   let masterECTS = 120;
+  let moduleECTS: Record<string, number | ''> = {};
 
   $: totalECTS = degreeType === 'bachelor' ? bachelorECTS : masterECTS;
+
+  $: if ($curriculumStore.modules) {
+    $curriculumStore.modules.forEach(m => {
+      if (!(m.code in moduleECTS)) {
+        moduleECTS[m.code] = '';
+      }
+    });
+  }
+
+  $: canSubmit = degreeType === 'bachelor'
+    ? bachelorECTS > 0 && $curriculumStore.modules.every(m => {
+        const val = moduleECTS[m.code];
+        return typeof val === 'number' && val > 0;
+      })
+    : masterECTS > 0;
 
   const handleSubmit = () => {
     curriculumStore.update(curr => ({
       ...curr,
       credits: totalECTS,
       degreeType: degreeType,
-      startSemester: startSemester
+      startSemester: startSemester,
+      modules: curr.modules.map(module => ({
+        ...module,
+        credits: (typeof moduleECTS[module.code] === 'number' ? moduleECTS[module.code] : module.credits) as number
+      }))
     }));
     goto('/graph');
   };
@@ -80,8 +100,28 @@
         </div>
       </section>
 
-      <button type="submit" class="submit-btn">
-        Continue
+      <!-- Bachelor's Degree Section -->
+      {#if degreeType === 'bachelor' && $curriculumStore.modules.length}
+        <section>
+          <h2>ECTS per Module</h2>
+          <p class="desc">Specify the ECTS credits for each module in your curriculum</p>
+          {#each $curriculumStore.modules as module}
+            <div class="module-row">
+              <div class="module-info">
+                <strong>{module.name}</strong>
+                <small>{module.code}</small>
+              </div>
+              <div class="input-group small">
+                <input type="number" bind:value={moduleECTS[module.code]} />
+                <span>ECTS</span>
+              </div>
+            </div>
+          {/each}
+        </section>
+      {/if}
+
+      <button type="submit" class="submit-btn" disabled={!canSubmit}>
+        Finish Onboarding
       </button>
     </form>
   </div>
@@ -202,6 +242,11 @@
     max-width: 18.75rem;
   }
 
+  .input-group.small {
+    max-width: 7.5rem;
+    min-width: 7.5rem;
+  }
+
   .input-group span {
     font-weight: 600;
     color: #7f8c8d;
@@ -222,9 +267,38 @@
     border-color: #007bff;
   }
 
+  .module-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 1rem;
+  }
+
+  .module-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+  }
+
+  .module-info strong {
+    font-weight: 500;
+  }
+
+  .module-info small {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    font-family: monospace;
+  }
+
   .submit-btn {
     display: block;
-    margin: 0 auto;
+    margin: 2rem auto 0;
     padding: 0.75rem 2rem;
     font-size: 1.1rem;
     font-weight: 600;
@@ -233,5 +307,10 @@
     border: none;
     border-radius: 1rem;
     cursor: pointer;
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 </style>
