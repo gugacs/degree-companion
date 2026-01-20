@@ -10,7 +10,13 @@ Simple web app to allow students to plan their academic journey in a simplified 
 - Bun.js (OR: npm & node)
 - Rust & Cargo (rustup)
 
-### 📦 Installation
+### 📦 Releases
+
+Built pre-release artifacts (executables for supported platforms) are published on the GitHub Releases page.
+Download the latest release [here](https://github.com/gugacs/degree-companion/releases/latest).
+We currently have exceutables for Windows, macOS, and Linux.
+
+### 📦 Manual Setup
 
 ```bash
 # Clone the repository
@@ -18,7 +24,6 @@ git clone git@github.com:gugacs/degree-companion.git
 cd degree-companion # Ensure you are in the project root
 
 # Prepare the app
-cd app
 bun install # OR: npm install
 ```
 
@@ -32,15 +37,13 @@ bun install # OR: npm install
 **Development Mode**
 
 ```bash
-# Terminal 1: Start App
-cd app # Ensure you are in the project root
 bun run tauri dev # New application window should open
 ```
 
-**Production Mode**
+**Production Build**
 
 ```bash
-# TODO
+bun run tauri build # Will create executable files in src-tauri/target folder
 ```
 
 ## 📝 License

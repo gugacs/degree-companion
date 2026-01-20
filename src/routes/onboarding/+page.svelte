@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { ArrowLeft } from '@lucide/svelte';
+  import {ArrowLeft, ArrowRight} from '@lucide/svelte';
   import { curriculumStore } from '$lib/states/curriculum.svelte';
 
   let degreeType: 'bachelor' | 'master' = 'bachelor';
@@ -61,7 +61,7 @@
 
 <main>
   <button class="back-btn" on:click={() => goto('/')}>
-    <ArrowLeft size={20} />
+    <ArrowLeft size="0.9rem" />
     Back
   </button>
 
@@ -201,7 +201,8 @@
 
       <!-- Submit Button -->
       <button type="submit" class="submit-btn" disabled={!canSubmit}>
-        Finish Onboarding
+        Continue
+        <ArrowRight size="0.9rem"/>
       </button>
     </form>
   </div>
@@ -251,14 +252,18 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem;
     background: var(--color-bg-card);
     border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
+    border-radius: 1rem;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 1rem;
     transition: all 0.2s;
     z-index: 100;
+    font-weight: 600;
+    text-decoration: none;
+    color: white;
+    background-color: #007bff;
   }
 
   .back-btn:hover {
@@ -493,8 +498,8 @@
   .submit-btn {
     display: block;
     margin: 2rem auto 0;
-    padding: 0.75rem 2rem;
-    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
     font-weight: 600;
     color: white;
     background: var(--color-primary);

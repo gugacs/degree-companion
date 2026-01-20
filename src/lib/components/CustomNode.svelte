@@ -2,13 +2,13 @@
   import { Handle, Position } from '@xyflow/svelte'
   import CourseCard from "$lib/components/CourseCard.svelte";
 
-  export let data
+  let { data } = $props();
 </script>
 
 <div class="course-node">
   <Handle type="source" position={Position.Right} />
 
-  <CourseCard course={data.lv} />
+  <CourseCard course={data.lv} onDelete={data.onDelete} />
 
   <Handle type="target" position={Position.Left} />
 </div>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { csv } from "\$lib/states/curriculum.svelte";
   import { createTable, Subscribe, Render } from '@humanspeak/svelte-headless-table';
-  import { MoveRight } from '@lucide/svelte';
+  import { ArrowRight } from '@lucide/svelte';
   import { readable } from "svelte/store";
 
   let table;
@@ -80,7 +80,7 @@
 
     <a href="/onboarding" class="continue-button">
       Continue to Onboarding
-      <MoveRight size="0.9rem"/>
+      <ArrowRight size="0.9rem"/>
     </a>
   {/if}
 </div>
