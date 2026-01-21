@@ -103,7 +103,6 @@
     overflow: auto;
     border: 3px solid lightgrey;
     border-radius: 1rem;
-    padding: 0.5rem;
   }
 
   .continue-button {
@@ -128,20 +127,19 @@
   }
 
   table {
+    width: 100%;
     border-spacing: 0;
-    border-top: 0.1rem solid black;
+    border-collapse: separate;
     border-left: 0.1rem solid black;
   }
 
   th {
+    padding: 0.8rem;
     position: sticky;
     top: 0;
-    z-index: 10;
     background-color: lightgrey;
     border-bottom: 0.1rem solid black;
     border-right: 0.1rem solid black;
-    border-right: 0.1rem solid black;
-    padding: 0.5rem;
   }
 
   td {
