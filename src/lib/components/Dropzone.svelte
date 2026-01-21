@@ -216,16 +216,34 @@
   }
 </script>
 
-<FileDrop extensions={["csv"]} handleFiles={handleDrop} let:files>
-  <div class="dropzone" class:droppable={files.length == 1}>
-    <h2>Please provide us with your curriculum </h2>
-    <FileDown/>
-  </div>
-</FileDrop>
+<div class="file-wrapper">
+  <FileDrop extensions={["csv"]} handleFiles={handleDrop} let:files>
+    <div class="dropzone" class:droppable={files.length == 1}>
+      <h2>Please provide us with your curriculum </h2>
+      <FileDown/>
+    </div>
+  </FileDrop>
+
+  <h5>or</h5>
+
+  <button class="open-file-explorer">
+    Open file explorer
+  </button>
+</div>
 
 <style>
+.file-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h5 {
+  margin: 0;
+  font-weight: 500;
+}
+
 .dropzone {
-  margin: 20px;
   padding: 20px;
   background: #eee;
   border: 3px solid lightgrey;
@@ -235,4 +253,21 @@
   background: #d6dff0;
   border: 3px solid #007bff;
 }
+
+.open-file-explorer {
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 0.5rem;
+  width: fit-content;
+  border: 3px solid lightgrey;
+  border-radius: 1rem;
+  background: #eee;
+
+  &:hover {
+    background: #d6dff0;
+    border: 3px solid #007bff;
+  }
+}
+
 </style>
