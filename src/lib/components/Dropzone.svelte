@@ -228,8 +228,11 @@
   margin: 20px;
   padding: 20px;
   background: #eee;
+  border: 3px solid lightgrey;
+  border-radius: 1rem;
 }
 .droppable {
   background: #d6dff0;
+  border: 3px solid #007bff;
 }
 </style>

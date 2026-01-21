@@ -37,10 +37,11 @@
 }
 
 .container {
-  margin: 0;
-  padding-top: 10vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding-top: 10vh;
   justify-content: center;
   text-align: center;
 }
