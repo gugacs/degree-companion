@@ -26,6 +26,7 @@
     "targets": "all",
     "icon": [
       "icons/Icon-128x128@1x.icns",
+      "icons/Icon-128x128@1x.ico",
       "icons/Icon-128x128@1x.png"
     ]
   }
