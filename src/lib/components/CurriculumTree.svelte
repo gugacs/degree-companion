@@ -345,7 +345,8 @@
     </form>
 
     <button class="add-course-btn"
-            onclick={() => addCourse(courseToAdd)}>
+      onclick={() => addCourse(courseToAdd)}
+      disabled={!courseToAdd}>
       <Plus size="1rem" />
     </button>
   </div>
@@ -424,8 +425,14 @@
       transition: all 0.2s ease-in-out;
     }
 
-    .add-course-btn:hover {
+    .add-course-btn:not(:disabled):hover {
       transform: translateY(-0.2rem);
+    }
+
+    .add-course-btn:disabled {
+      background-color: #7f8c8d;
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   }
 
