@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { SvelteFlow, MiniMap, Controls, Background, type Node } from '@xyflow/svelte';
+    import { SvelteFlow, MiniMap, Controls, Background, type Node, type Viewport } from '@xyflow/svelte';
     import { Plus } from '@lucide/svelte';
     import '@xyflow/svelte/dist/style.css';
     import { curriculumStore } from "$lib/states/curriculum.svelte";
@@ -21,6 +21,8 @@
 
     const verticalSpacing = 300;
     const horizontalSpacing = 500;
+
+    const customViewport: Viewport = { x: 100, y: 125, zoom: 0.5 };
 
     $effect(() => {
       const showElectiveModules = false; // default: false
@@ -326,8 +328,6 @@
 
       courseToAdd = '';
     };
-
-
 </script>
 
 <div class="graph-wrapper">
@@ -370,9 +370,9 @@
       bind:edges
       {nodeTypes}
       {edgeTypes}
-      fitView
       style="--stroke-width: {strokeWidth}; --stroke-color: {strokeColor};"
-      onnodedragstop={handleNodeDragStop}>
+      onnodedragstop={handleNodeDragStop}
+      viewport={customViewport}>
       <MiniMap />
       <Controls />
       <Background />
