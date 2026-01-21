@@ -81,7 +81,7 @@
       subcategory: rawCourse["course_subcategory"],
       type: rawCourse["course_type"],
       credits: parseFloat(rawCourse["credits"]) || 0,
-      required: parseInt(rawCourse["required"], 10),
+      required: parseInt(rawCourse["required_code"], 10),
       availability: rawCourse["availability"],
       recommended_semester: parseInt(rawCourse["recommended_semester"], 10) || 0,
       prerequisites: prerequisiteIds, // Temporarily store IDs
@@ -128,7 +128,7 @@
           const splitNames = rawCourse["course_name"].split(";");
           const splitTypes = rawCourse["course_type"].split(";");
           const splitCredits = rawCourse["credits"].split(";");
-          const splitRequired = rawCourse["required"] ? rawCourse["required"].split(";") : [];
+          const splitRequired = rawCourse["required_code"] ? rawCourse["required_code"].split(";") : [];
           const splitAvailability = rawCourse["availability"].split(";");
           const splitRecommendedSemesters = rawCourse["recommended_semester"].split(";");
           const splitFrequencies = rawCourse["frequency"].split(";");
@@ -142,7 +142,7 @@
             newRawCourse["course_name"] = splitNames[j]?.trim();
             newRawCourse["course_type"] = splitTypes[j]?.trim();
             newRawCourse["credits"] = splitCredits[j]?.trim();
-            newRawCourse["required"] = splitRequired[j]?.trim();
+            newRawCourse["required_code"] = splitRequired[j]?.trim();
             newRawCourse["availability"] = splitAvailability[j]?.trim();
             newRawCourse["recommended_semester"] = splitRecommendedSemesters[j]?.trim();
             newRawCourse["frequency"] = splitFrequencies[j]?.trim();
