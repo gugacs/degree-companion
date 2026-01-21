@@ -1,4 +1,4 @@
-course_id,course_name,module_code,module_name,course_subcategory,course_type,credits,required,availability,recommended_semester,prerequisites,frequency,language,description,url
+course_id,course_name,module_code,module_name,course_subcategory,course_type,credits,required_code,availability,recommended_semester,prerequisites,frequency,language,description,url
 710.000,Introduction to the Study Software Engineering and Management,A,Fundamentals of Computer Science,,OL,0;5,,W,1,,yearly,DE,This course could be described here.,https://online.tugraz.at/tug_online/ee/ui/ca2/app/desktop/#/slc.tm.cp/student/courses/589117?$scrollTo=toc_overview
 705.001,Automata Theory,A,Fundamentals of Computer Science,,VO,3,,W,1,,yearly,EN,This course could be described here.,https://online.tugraz.at/tug_online/ee/ui/ca2/app/desktop/#/slc.tm.cp/student/courses/589118?$scrollTo=toc_overview
 716.005,Automata Theory,A,Fundamentals of Computer Science,,KU,2,,W,1,,yearly,EN,This course could be described here.,https://online.tugraz.at/tug_online/ee/ui/ca2/app/desktop/#/slc.tm.cp/student/courses/589119?$scrollTo=toc_overview
