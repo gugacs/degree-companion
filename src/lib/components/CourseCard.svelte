@@ -19,13 +19,13 @@
   };
 
   const enableWorkButtonColor = () => {
-    isWorkButtonActive = true;
+    isWorkButtonActive = color == COLOR_WORK;
     isDoneButtonActive = false;
   };
 
   const enableDoneButtonColor = () => {
     isWorkButtonActive = false;
-    isDoneButtonActive = true;
+    isDoneButtonActive = color == COLOR_DONE;
   };
 
   const disableBothButtons = () => {
@@ -112,21 +112,21 @@
   {#if isEditing}
     <div class="course-card-edit">
       <div class="edit-options">
-        <div class="edit-item">
-          <button class={isWorkButtonActive ? "button-active" : "button-disabled"}
-                  onclick={() => {
+        <div class="edit-item"
+             onclick={() => {
                    setCourseColor(COLOR_WORK);
                    enableWorkButtonColor()
-                  }}></button>
+                  }}>
+          <button class={isWorkButtonActive ? "button-active" : "button-disabled"}></button>
           <h3>In Work</h3>
           <NotebookPen size="1rem"/>
         </div>
-        <div class="edit-item">
-          <button class={isDoneButtonActive ? "button-active" : "button-disabled"}
-                  onclick={() => {
+        <div class="edit-item"
+             onclick={() => {
                    setCourseColor(COLOR_DONE);
                    enableDoneButtonColor();
-                  }}></button>
+                  }}>
+          <button class={isDoneButtonActive ? "button-active" : "button-disabled"}></button>
           <h3>Done</h3>
           <GraduationCap size="1rem"/>
         </div>
@@ -268,7 +268,6 @@
       gap: 0.75rem;
 
       button {
-        cursor: pointer;
         border-radius: 0.75rem;
         border: none;
       }
@@ -277,6 +276,7 @@
         display: flex;
         flex-direction: column;
         margin-top: 0.5rem;
+        cursor: pointer;
 
         .edit-item {
           display: flex;
