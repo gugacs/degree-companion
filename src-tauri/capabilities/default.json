@@ -11,11 +11,20 @@
     "fs:default",
     {
       "identifier": "fs:allow-read",
-      "allow": [{ "path": "$HOME/**/*" }]
+      "allow": [
+        {
+          "path": "$HOME/**/*"
+        }
+      ]
     },
     {
       "identifier": "fs:allow-exists",
-      "allow": [{ "path": "$HOME/**/*" }]
-    }
+      "allow": [
+        {
+          "path": "$HOME/**/*"
+        }
+      ]
+    },
+    "dialog:default"
   ]
 }

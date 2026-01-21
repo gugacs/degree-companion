@@ -13,6 +13,7 @@
   import type { Course, Curriculum, Module } from "$lib/types/data";
   import { csv, curriculumStore } from "$lib/states/curriculum.svelte";
   import { FileDown } from "@lucide/svelte";
+  import { open } from '@tauri-apps/plugin-dialog';
 
   const readFile = async (path: string) => {
     try {
@@ -214,6 +215,22 @@
     curriculumStore.set(parsedCurriculum);
     console.log($curriculumStore);
   }
+
+
+  async function openFileExplorer() {
+    const file = await open({
+      multiple: false,
+      directory: false,
+    });
+
+    if (!file) return;
+
+    let paths: string[] = [];
+    paths.push(file);
+
+    await handleDrop(paths);
+  }
+
 </script>
 
 <div class="file-wrapper">
@@ -226,7 +243,8 @@
 
   <h5>or</h5>
 
-  <button class="open-file-explorer">
+  <button class="open-file-explorer"
+          on:click={() => openFileExplorer()}>
     Open file explorer
   </button>
 </div>
