@@ -169,10 +169,12 @@
       <p>{module}</p>
     </div>
 
-    <div class="info-item">
-      <h2>Subcategory: </h2>
-      <p>{subcategory}</p>
-    </div>
+    {#if subcategory.size === 0}
+      <div class="info-item">
+        <h2>Subcategory: </h2>
+        <p>{subcategory}</p>
+      </div>
+    {/if}
 
     {#if recommendedSemester != null}
       <div class="info-item">
@@ -206,8 +208,8 @@
     <h2>Description</h2>
     <p>{description}</p>
 
-    <a href={url} target="_blank" rel="noopener noreferrer" class="course-link">
-      View Course Details
+    <a href={url} class="course-link">
+      {url}
     </a>
   </div>
 </div>
@@ -363,11 +365,17 @@
         align-items: center;
         justify-content: center;
       }
+
+      h1 {
+        width: 70%;
+        text-wrap: wrap;
+      }
     }
 
     .course-info-container {
       display: flex;
       flex-direction: column;
+      align-items: center;
 
       .info-item {
         display: flex;
@@ -378,6 +386,9 @@
       .course-link {
         font-size: 0.8rem;
         text-decoration: underline;
+        overflow-wrap: anywhere;
+        word-break: break-all;
+        max-width: 70%;
       }
     }
   }
