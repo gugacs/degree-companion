@@ -8,16 +8,20 @@
     import SemesterNode from "$lib/components/SemesterNode.svelte";
     import HorizontalSeparatorNode from "$lib/components/HorizontalSeparatorNode.svelte";
     import VerticalSeparatorNode from "$lib/components/VerticalSeparatorNode.svelte";
+    import AddSemesterNode from "$lib/components/AddSemesterNode.svelte";
 
     const nodeTypes = {
       custom: CustomNode,
       header: SemesterNode,
       horizontalSeparator: HorizontalSeparatorNode,
-      verticalSeparator: VerticalSeparatorNode };
+      verticalSeparator: VerticalSeparatorNode,
+      addSemesterNode: AddSemesterNode
+    };
     const edgeTypes = { custom: CustomEdge };
 
     let nodes = $state.raw([]);
     let edges = $state.raw([]);
+    let semesterCount = $state(0)
 
     const verticalSpacing = 300;
     const horizontalSpacing = 500;
@@ -54,11 +58,26 @@
         return acc;
       }, {});
 
-      console.log(coursesBySemester);
+      const highestSemesterInCourses = Math.max(
+        0,
+        ...Object.keys(coursesBySemester).map(Number)
+      );
 
-      const sortedSemesters = Object.keys(coursesBySemester).sort((a, b) => Number(a) - Number(b));
+      semesterCount = Math.max(semesterCount, highestSemesterInCourses);
 
-      const headerNodes = sortedSemesters.map((semester, columnIndex) => {
+      // create an array of all semester numbers to be rendered
+      const allSemesterNumbers = Array.from({ length: semesterCount }, (_, i) => i + 1);
+      if (coursesBySemester[0]) {
+        allSemesterNumbers.unshift(0);
+      }
+
+      const semesterColumnIndexMap = new Map(allSemesterNumbers.map((sem, index) => [sem, index]));
+      const totalColumns = allSemesterNumbers.length;
+
+      const headerNodes = allSemesterNumbers.map((semester) => {
+        const columnIndex = semesterColumnIndexMap.get(semester);
+        const semesterData = coursesBySemester[semester];
+
         if (parseInt(semester) == 0) {
           return {
             id: `header-${semester}`,
@@ -78,11 +97,11 @@
         return {
           id: `header-${semester}`,
           type: 'header',
-          position: {
-            x: columnIndex * horizontalSpacing,
-            y: columnHeaderYPosition
+          position: { x: columnIndex * horizontalSpacing, y: columnHeaderYPosition },
+          data: {
+            label: `Semester ${semester}`,
+            semesterECTS: semesterData ? semesterData.totalECTS : 0
           },
-          data: { label: `Semester ${semester}`, semesterECTS: coursesBySemester[semester].totalECTS },
           draggable: false,
           selectable: false,
           connectable: false,
@@ -94,10 +113,12 @@
 
       // create nodes from the grouped structure and adapt the map in the same loop
       const newNodes = Object.keys(coursesBySemester)
-        .sort((a, b) => Number(a) - Number(b))
-        .flatMap((semester, columnIndex) => {
-          const coursesInSemester = coursesBySemester[semester].courses;
+        .flatMap((semesterStr) => {
+          const semester = Number(semesterStr);
+          const columnIndex = semesterColumnIndexMap.get(semester);
+          if (columnIndex === undefined) return [];
 
+          const coursesInSemester = coursesBySemester[semester].courses;
           return coursesInSemester.map((course, rowIndex) => {
             const nodeId = `${course.id}-${semester}-${rowIndex}`; // Unique ID
 
@@ -175,13 +196,11 @@
       const verticalSeparatorHeight = (maxCoursesInSemester - 1) * verticalSpacing + 100;
 
       // create the separators
-      const verticalSeparatorNodes = sortedSemesters
-        .slice(0, -1)
-        .map((_, columnIndex) => {
-          const xPosition = (columnIndex + 0.75) * horizontalSpacing;
-
+      const verticalSeparatorNodes = Array.from({ length: totalColumns - 1 })
+        .map((_, index) => {
+          const xPosition = (index + 0.75) * horizontalSpacing;
           return {
-            id: `separator-${columnIndex}`,
+            id: `v-separator-${index}`,
             type: 'verticalSeparator',
             position: { x: xPosition, y: -50 },
             draggable: false,
@@ -193,13 +212,13 @@
         });
 
       // create the horizontal separator between semesters and courses
-      const horizontalSeparatorNodes = sortedSemesters.map((_, columnIndex) => {
-        const xPosition = columnIndex * horizontalSpacing - (horizontalSpacing / 4);
+      const horizontalSeparatorNodes = Array.from({ length: totalColumns }).map((_, index) => {
+        const xPosition = index * horizontalSpacing - (horizontalSpacing / 4);
         const yPosition = columnHeaderYPosition + 150;
         const lineWidth = horizontalSpacing / 15;
 
         return {
-          id: `h-separator-${columnIndex}`,
+          id: `h-separator-${index}`,
           type: 'horizontalSeparator',
           position: { x: xPosition, y: yPosition },
           draggable: false,
@@ -210,11 +229,28 @@
         };
       });
 
+      const addSemesterNode = {
+        id: 'add-semester-button',
+        type: 'addSemesterNode',
+        position: {
+          x: totalColumns * horizontalSpacing,
+          y: columnHeaderYPosition
+        },
+        data: {
+          onClick: addNewSemester
+        },
+        draggable: false,
+        selectable: false,
+        connectable: false,
+        style: 'background: transparent; border: none;'
+      };
+
       nodes = [
         ...headerNodes,
         ...newNodes,
         ...verticalSeparatorNodes,
-        ...horizontalSeparatorNodes
+        ...horizontalSeparatorNodes,
+        addSemesterNode
       ];
       edges = newEdges;
     });
@@ -328,6 +364,10 @@
 
       courseToAdd = '';
     };
+
+    function addNewSemester() {
+      semesterCount ++;
+    }
 </script>
 
 <div class="graph-wrapper">
