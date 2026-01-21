@@ -46,6 +46,12 @@ bun run tauri dev # New application window should open
 bun run tauri build # Will create executable files in src-tauri/target folder
 ```
 
+## ⚠️ Limitations
+
+Due to using tauri specific plugins (e.g., [File System](https://v2.tauri.app/plugin/file-system/), [Dialog](https://v2.tauri.app/plugin/dialog/)) it is impossible to deploy this application as a regular web app.
+The core application logic would need to be restructured in order to built a version of this application deployable on web servers.
+This application is supposed to help individuals plan their academic journey for which a regular desktop app is more suitable anways due to lower overhead.
+
 ## 📝 License
 
 MIT License (see [License file](LICENSE))
