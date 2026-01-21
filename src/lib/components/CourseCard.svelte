@@ -19,13 +19,13 @@
   };
 
   const enableWorkButtonColor = () => {
-    isWorkButtonActive = true;
+    isWorkButtonActive = color == COLOR_WORK;
     isDoneButtonActive = false;
   };
 
   const enableDoneButtonColor = () => {
     isWorkButtonActive = false;
-    isDoneButtonActive = true;
+    isDoneButtonActive = color == COLOR_DONE;
   };
 
   const disableBothButtons = () => {
@@ -112,21 +112,21 @@
   {#if isEditing}
     <div class="course-card-edit">
       <div class="edit-options">
-        <div class="edit-item">
-          <button class={isWorkButtonActive ? "button-active" : "button-disabled"}
-                  onclick={() => {
+        <div class="edit-item"
+             onclick={() => {
                    setCourseColor(COLOR_WORK);
                    enableWorkButtonColor()
-                  }}></button>
+                  }}>
+          <button class={isWorkButtonActive ? "button-active" : "button-disabled"}></button>
           <h3>In Work</h3>
           <NotebookPen size="1rem"/>
         </div>
-        <div class="edit-item">
-          <button class={isDoneButtonActive ? "button-active" : "button-disabled"}
-                  onclick={() => {
+        <div class="edit-item"
+             onclick={() => {
                    setCourseColor(COLOR_DONE);
                    enableDoneButtonColor();
-                  }}></button>
+                  }}>
+          <button class={isDoneButtonActive ? "button-active" : "button-disabled"}></button>
           <h3>Done</h3>
           <GraduationCap size="1rem"/>
         </div>
@@ -169,10 +169,12 @@
       <p>{module}</p>
     </div>
 
-    <div class="info-item">
-      <h2>Subcategory: </h2>
-      <p>{subcategory}</p>
-    </div>
+    {#if subcategory.size === 0}
+      <div class="info-item">
+        <h2>Subcategory: </h2>
+        <p>{subcategory}</p>
+      </div>
+    {/if}
 
     {#if recommendedSemester != null}
       <div class="info-item">
@@ -206,8 +208,8 @@
     <h2>Description</h2>
     <p>{description}</p>
 
-    <a href={url} target="_blank" rel="noopener noreferrer" class="course-link">
-      View Course Details
+    <a href={url} class="course-link">
+      {url}
     </a>
   </div>
 </div>
@@ -266,7 +268,6 @@
       gap: 0.75rem;
 
       button {
-        cursor: pointer;
         border-radius: 0.75rem;
         border: none;
       }
@@ -275,6 +276,7 @@
         display: flex;
         flex-direction: column;
         margin-top: 0.5rem;
+        cursor: pointer;
 
         .edit-item {
           display: flex;
@@ -363,11 +365,17 @@
         align-items: center;
         justify-content: center;
       }
+
+      h1 {
+        width: 70%;
+        text-wrap: wrap;
+      }
     }
 
     .course-info-container {
       display: flex;
       flex-direction: column;
+      align-items: center;
 
       .info-item {
         display: flex;
@@ -378,6 +386,9 @@
       .course-link {
         font-size: 0.8rem;
         text-decoration: underline;
+        overflow-wrap: anywhere;
+        word-break: break-all;
+        max-width: 70%;
       }
     }
   }

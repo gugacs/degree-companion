@@ -13,6 +13,7 @@
   import type { Course, Curriculum, Module } from "$lib/types/data";
   import { csv, curriculumStore } from "$lib/states/curriculum.svelte";
   import { FileDown } from "@lucide/svelte";
+  import { open } from '@tauri-apps/plugin-dialog';
 
   const readFile = async (path: string) => {
     try {
@@ -214,22 +215,77 @@
     curriculumStore.set(parsedCurriculum);
     console.log($curriculumStore);
   }
+
+
+  async function openFileExplorer() {
+    const file = await open({
+      multiple: false,
+      directory: false,
+    });
+
+    if (!file) return;
+
+    let paths: string[] = [];
+    paths.push(file);
+
+    await handleDrop(paths);
+  }
+
 </script>
 
-<FileDrop extensions={["csv"]} handleFiles={handleDrop} let:files>
-  <div class="dropzone" class:droppable={files.length == 1}>
-    <h2>Please provide us with your curriculum </h2>
-    <FileDown/>
-  </div>
-</FileDrop>
+<div class="file-wrapper">
+  <FileDrop extensions={["csv"]} handleFiles={handleDrop} let:files>
+    <div class="dropzone" class:droppable={files.length == 1}>
+      <h2>Please provide us with your curriculum </h2>
+      <FileDown/>
+    </div>
+  </FileDrop>
+
+  <h5>or</h5>
+
+  <button class="open-file-explorer"
+          on:click={() => openFileExplorer()}>
+    Open file explorer
+  </button>
+</div>
 
 <style>
+.file-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h5 {
+  margin: 0;
+  font-weight: 500;
+}
+
 .dropzone {
-  margin: 20px;
   padding: 20px;
   background: #eee;
+  border: 3px solid lightgrey;
+  border-radius: 1rem;
 }
 .droppable {
   background: #d6dff0;
+  border: 3px solid #007bff;
 }
+
+.open-file-explorer {
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 0.5rem;
+  width: fit-content;
+  border: 3px solid lightgrey;
+  border-radius: 1rem;
+  background: #eee;
+
+  &:hover {
+    background: #d6dff0;
+    border: 3px solid #007bff;
+  }
+}
+
 </style>

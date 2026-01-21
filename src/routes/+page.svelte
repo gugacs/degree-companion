@@ -37,11 +37,15 @@
 }
 
 .container {
-  margin: 0;
-  padding-top: 10vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
+  min-height: 80vh;
+  width: 100%;
+  margin: 0;
   text-align: center;
 }
 

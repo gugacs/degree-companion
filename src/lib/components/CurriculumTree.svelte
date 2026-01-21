@@ -459,14 +459,17 @@
     .add-course-btn {
       border: none;
       color: white;
-      border-radius: 1rem;
       cursor: pointer;
+      border-radius: 0.4rem;
       background-color: var(--color-primary);
       transition: all 0.2s ease-in-out;
+      padding: 0.2rem 0.3rem;
     }
 
-    .add-course-btn:not(:disabled):hover {
-      transform: translateY(-0.2rem);
+    .add-course-btn:disabled {
+      background-color: lightgrey;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .add-course-btn:disabled {
