@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Degree companion",
+  "productName": "Degree Companion",
   "version": "0.2.0",
   "identifier": "companion.degree.app",
   "build": {
