@@ -147,5 +147,7 @@
     border-right: 0.1rem solid black;
     font-size: 0.8rem;
     font-weight: 500;
+    text-align: left;
+    padding: 0.1rem 0.3rem;
   }
 </style>
