@@ -97,6 +97,13 @@
     height: 70vh;
   }
 
+  .table-wrapper:empty {
+    display: none;
+    margin: 0;
+    padding: 0;
+    height: 0;
+  }
+
   .table-content {
     width: 90cqw;
     height: 70cqh;
