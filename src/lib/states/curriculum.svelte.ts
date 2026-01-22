@@ -1,6 +1,5 @@
 import type { Curriculum, Graph } from "$lib/types/data";
 import { writable } from "svelte/store";
-import { storageManager } from "$lib/services/storageManager";
 
 export const csv = writable<any>();
 
@@ -22,21 +21,3 @@ export const graphStore = writable<Graph>({
   semesterCount: 0,
   courseCardStates: {}
 });
-
-//===========================================================
-//==================AUTO SAVE FUNCT.=========================
-//===========================================================
-if (typeof window !== 'undefined') {
-  let saveTimeout: ReturnType<typeof setTimeout>;
-
-  const debouncedSave = () => {
-    clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(() => {
-      storageManager.save();
-    }, 1000);
-  };
-
-  curriculumStore.subscribe(debouncedSave);
-  graphStore.subscribe(debouncedSave);
-  csv.subscribe(debouncedSave);
-}

@@ -6,29 +6,7 @@
   import { csv, curriculumStore, graphStore } from '$lib/states/curriculum.svelte';
 
   function handleBackClick() {
-    // Clear the stores
-    curriculumStore.set({
-      credits: 0,
-      modules: [],
-      courses: [],
-      degreeType: 'bachelor',
-      startSemester: 'winter',
-      majorModule: '',
-      minorModule: ''
-    });
-    
-    graphStore.set({
-      nodes: [],
-      edges: [],
-      strokeWidth: 2,
-      strokeColor: '#000000',
-      semesterCount: 0,
-      courseCardStates: {}
-    });
-    
-    csv.set(undefined);
-    // Clear localStorage
-    storageManager.clear();
+    storageManager.clear(); // Clear the stores
   }
 </script>
 

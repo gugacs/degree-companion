@@ -22,12 +22,12 @@
     if (hasData) {
       storageManager.load();
 
-      // Check if the loaded curriculum actually has courses
+      // Check if the loaded curriculum actually has courses and data etc
       const curriculum = $curriculumStore;
       if (curriculum.courses && curriculum.courses.length > 0) {
         await goto('/graph');
       } else {
-        storageManager.clear(); // Empty state, clear it
+        storageManager.clear(); // Clear the stores
       }
     }
     isCheckingStorage = false;
