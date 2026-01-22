@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { SvelteFlow, MiniMap, Controls, Background, type Node, type Viewport } from '@xyflow/svelte';
+    import { SvelteFlow, MiniMap, Controls, Background, type Node, type Viewport, type Connection } from '@xyflow/svelte';
     import { Plus } from '@lucide/svelte';
     import '@xyflow/svelte/dist/style.css';
-    import { curriculumStore } from "$lib/states/curriculum.svelte";
+    import { curriculumStore, graphStore } from "$lib/states/curriculum.svelte";
     import CustomNode from "$lib/components/CustomNode.svelte";
     import CustomEdge from "$lib/components/CustomEdge.svelte";
     import SemesterNode from "$lib/components/SemesterNode.svelte";
@@ -19,14 +19,47 @@
     };
     const edgeTypes = { custom: CustomEdge };
 
-    let nodes = $state.raw([]);
-    let edges = $state.raw([]);
-    let semesterCount = $state(0)
+    // Load from store
+    let nodes = $state.raw($graphStore.nodes);
+    let edges = $state.raw($graphStore.edges);
+    let semesterCount = $state($graphStore.semesterCount);
+    let strokeWidth = $state($graphStore.strokeWidth);
+    let strokeColor = $state($graphStore.strokeColor);
 
     const verticalSpacing = 300;
     const horizontalSpacing = 500;
-
     const customViewport: Viewport = { x: 100, y: 125, zoom: 0.5 };
+    
+    // Handle manually added prerequisites connections to be added to the store
+    function handleConnect(connection: Connection) {
+      if (!connection.source || !connection.target) return;
+    
+      const sourceNode = nodes.find(n => n.id === connection.source);
+      const targetNode = nodes.find(n => n.id === connection.target);
+      if (!sourceNode || !targetNode || sourceNode.type !== 'custom' || targetNode.type !== 'custom') return;
+    
+      const targetCourse = $curriculumStore.courses.find(c => c.id === targetNode.data.lv.id);
+      const sourceCourse = $curriculumStore.courses.find(c => c.id === sourceNode.data.lv.id);
+      if (!targetCourse || !sourceCourse) return;
+    
+      const prereqExists = targetCourse.prerequisites.some(p => p.id === sourceCourse.id);
+      if (!prereqExists) {
+        targetCourse.prerequisites = [...targetCourse.prerequisites, sourceCourse];
+        $curriculumStore.courses = [...$curriculumStore.courses];
+      }
+    }
+    
+    // Sync all changes back to store
+    $effect(() => {
+      graphStore.update(state => ({
+        ...state,
+        nodes,
+        edges,
+        strokeWidth,
+        strokeColor,
+        semesterCount
+      }));
+    });
 
     $effect(() => {
       const showElectiveModules = false; // default: false
@@ -322,10 +355,6 @@
       }
     }
 
-    // variables for graph controls
-    let strokeWidth = $state(2);
-    let strokeColor = $state('#000000');
-
     const deleteCourse = (courseId: string) => {
       const course = $curriculumStore.courses.find(c => c.id === courseId);
       if (course) {
@@ -412,6 +441,7 @@
       {edgeTypes}
       style="--stroke-width: {strokeWidth}; --stroke-color: {strokeColor};"
       onnodedragstop={handleNodeDragStop}
+      onconnect={handleConnect}
       viewport={customViewport}>
       <MiniMap />
       <Controls />
@@ -461,21 +491,16 @@
       color: white;
       cursor: pointer;
       border-radius: 0.4rem;
-      background-color: var(--color-primary);
+      background-color: #007bff;
       transition: all 0.2s ease-in-out;
       padding: 0.2rem 0.3rem;
     }
 
     .add-course-btn:disabled {
       background-color: lightgrey;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .add-course-btn:disabled {
-      background-color: #7f8c8d;
       opacity: 0.5;
       cursor: not-allowed;
+      transform: none;
     }
   }
 

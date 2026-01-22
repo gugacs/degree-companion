@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Info, Pencil, CircleCheck, CircleX, CircleQuestionMark, X, GraduationCap, NotebookPen, Undo, Trash2 } from '@lucide/svelte';
   import { onMount } from 'svelte';
+  import { graphStore } from '$lib/states/curriculum.svelte';
 
   let { course, onDelete } =  $props();
 
@@ -9,6 +10,30 @@
   const COLOR_DONE = "#CEEBB7";
 
   const resolve = <T,>(val: T | T[]): T => Array.isArray(val) ? val[0] : val;
+  const courseId = $derived(resolve(course.id));
+  
+  // Load from store
+  const savedState = $derived($graphStore.courseCardStates[courseId]);
+  let color = $state(savedState?.color || COLOR_DEFAULT);
+  let isWorkButtonActive = $state(savedState?.isWorkButtonActive || false);
+  let isDoneButtonActive = $state(savedState?.isDoneButtonActive || false);
+  let popoverId = $state("");
+  let isEditing = $state(false);
+  
+  // Sync all changes back to store
+  $effect(() => {
+    graphStore.update(state => ({
+      ...state,
+      courseCardStates: {
+        ...state.courseCardStates,
+        [courseId]: {
+          color,
+          isWorkButtonActive,
+          isDoneButtonActive
+        }
+      }
+    }));
+  });
 
   const setCourseColor = (new_color: string) => {
     if (color === new_color) {
@@ -32,12 +57,6 @@
     isWorkButtonActive = false;
     isDoneButtonActive = false;
   };
-
-  let popoverId = $state("");
-  let isEditing = $state(false);
-  let color = $state(COLOR_DEFAULT);
-  let isWorkButtonActive = $state(false);
-  let isDoneButtonActive = $state(false);
 
   const name = $derived(resolve(course.name));
   const type = $derived(resolve(course.type));
