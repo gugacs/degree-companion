@@ -1,8 +1,10 @@
-import { get } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import { curriculumStore, csv, graphStore } from '$lib/states/curriculum.svelte';
 import type { Course, Curriculum } from '$lib/types/data';
 
+export const resetKey = writable(0);
 const STORAGE_KEY = 'degree-companion-state';
+
 let autoSaveEnabled = true;
 let saveTimeout: ReturnType<typeof setTimeout>;
 
@@ -118,7 +120,7 @@ export const storageManager = {
       });
 
       csv.set(undefined);
-
+      resetKey.update(n => n + 1);
       setTimeout(() => { autoSaveEnabled = true; }, 100);
     } catch (error) {
       console.error('Failed to clear state:', error);

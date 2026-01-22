@@ -2,8 +2,7 @@
   import CurriculumTree from "$lib/components/CurriculumTree.svelte";
   import Legend from "$lib/components/Legend.svelte";
   import {ArrowLeft} from '@lucide/svelte';
-  import { storageManager } from '$lib/services/storageManager';
-  import { csv, curriculumStore, graphStore } from '$lib/states/curriculum.svelte';
+  import { storageManager, resetKey } from '$lib/services/storageManager';
 
   function handleBackClick() {
     storageManager.clear(); // Clear the stores
@@ -23,7 +22,9 @@
     <Legend/>
   </div>
 
-  <CurriculumTree/>
+  {#key $resetKey}
+      <CurriculumTree/>
+  {/key}
 </div>
 
 
