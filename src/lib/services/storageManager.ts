@@ -1,6 +1,6 @@
 import { get, writable } from 'svelte/store';
 import { curriculumStore, csv, graphStore } from '$lib/states/curriculum.svelte';
-import type { Course, Curriculum } from '$lib/types/data';
+import type { Course, Module } from '$lib/types/data';
 
 export const resetKey = writable(0);
 const STORAGE_KEY = 'degree-companion-state';
@@ -8,62 +8,133 @@ const STORAGE_KEY = 'degree-companion-state';
 let autoSaveEnabled = true;
 let saveTimeout: ReturnType<typeof setTimeout>;
 
-function serializeCourses(courses: Course[]): any[] {
-  return courses.map(course => ({
-    ...course,
-    prerequisites: course.prerequisites.map(prereq => prereq.id)
+export const disableAutoSave = () => autoSaveEnabled = false;
+export const enableAutoSave = () => autoSaveEnabled = true;
+
+//==================================================================
+//=======================Helper Functions===========================
+//==================================================================
+
+// Helper to build ID-to-item lookup maps for ciruclar reference circumvention
+const buildMap = <T>(items: T[], getIds: (item: T) => string | string[]): Map<string, T> => {
+  const map = new Map<string, T>();
+  items.forEach(item => {
+    const ids = Array.isArray(getIds(item)) ? getIds(item) : [getIds(item)];
+    (ids as string[]).forEach(id => map.set(id, item));
+  });
+  return map;
+};
+
+// ALLLLLL serializations for components the were able to have circular references
+const serializeCourse = (course: Course) => ({
+  ...course,
+  module: course.module.map(m => m.code),
+  prerequisites: course.prerequisites.map(p => p.id)
+});
+
+const deserializeCourses = (serialized: any[], modules: Module[]): Course[] => {
+  const moduleMap = buildMap(modules, m => m.code);
+  const courses: Course[] = serialized.map(sc => ({
+    ...sc,
+    module: sc.module.map((code: string) => moduleMap.get(code)).filter(Boolean),
+    prerequisites: []
   }));
-}
 
-function deserializeCourses(serializedCourses: any[]): Course[] {
-  const courses: Course[] = serializedCourses.map(sc => ({ ...sc, prerequisites: [] }));
-  const courseMap = new Map<string, Course>();
-
-  courses.forEach(course => {
-    const ids = Array.isArray(course.id) ? course.id : [course.id];
-    ids.forEach(id => courseMap.set(id, course));
-  });
-
-  serializedCourses.forEach((sc, index) => {
-    courses[index].prerequisites = sc.prerequisites
-      .map((prereqId: string | string[]) => {
-        const ids = Array.isArray(prereqId) ? prereqId : [prereqId];
-        for (const id of ids) {
-          const prereq = courseMap.get(id);
-          if (prereq) return prereq;
-        }
-        return undefined;
+  const courseMap = buildMap(courses, c => c.id);
+  serialized.forEach((sc, i) => {
+    courses[i].prerequisites = sc.prerequisites
+      .map((id: string | string[]) => {
+        const ids = Array.isArray(id) ? id : [id];
+        return ids.map(id => courseMap.get(id)).find(Boolean);
       })
-      .filter((prereq: Course | undefined) => prereq !== undefined);
+      .filter(Boolean);
   });
-
   return courses;
-}
+};
 
-function debouncedSave() {
+const serializeNode = (node: any) => {
+  if (!node.data?.lv) return node;
+  
+  const { onDelete, lv, ...restData } = node.data;
+  return {
+    ...node,
+    data: {
+      ...restData,
+      lv: serializeCourse(lv)
+    }
+  };
+};
+
+const deserializeNode = (node: any, courseMap: Map<string, Course>, moduleMap: Map<string, Module>) => {
+  if (!node.data?.lv) return node;
+
+  const { prerequisites: prereqIds, module: moduleCodes, ...restLv } = node.data.lv;
+  const prerequisites = prereqIds
+    .map((id: string | string[]) => {
+      const ids = Array.isArray(id) ? id : [id];
+      return ids.map(id => courseMap.get(id)).find(Boolean);
+    })
+    .filter(Boolean);
+
+  const module = moduleCodes.map((code: string) => moduleMap.get(code)).filter(Boolean);
+  return {
+    ...node,
+    data: {
+      ...node.data,
+      lv: { ...restLv, module, prerequisites }
+    }
+  };
+};
+
+const serializeEdge = (edge: any) => {
+  if (!edge.data?.sourceCourse || !edge.data?.targetCourse) return edge;
+  return {
+    ...edge,
+    data: {
+      sourceCourse: edge.data.sourceCourse.id,
+      targetCourse: edge.data.targetCourse.id
+    }
+  };
+};
+
+const deserializeEdge = (edge: any, courseMap: Map<string, Course>) => {
+  if (!edge.data?.sourceCourse || !edge.data?.targetCourse) return edge;
+  return {
+    ...edge,
+    data: {
+      sourceCourse: courseMap.get(edge.data.sourceCourse),
+      targetCourse: courseMap.get(edge.data.targetCourse)
+    }
+  };
+};
+
+const debouncedSave = () => {
   if (!autoSaveEnabled) return;
-
   clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(() => {
-    storageManager.save();
-  }, 1000);
-}
+  saveTimeout = setTimeout(() => storageManager.save(), 1000);
+};
+
+//==================================================================
+//=================Storage Manager Component========================
+//==================================================================
 
 export const storageManager = {
   save() {
     if (!autoSaveEnabled) return;
-
     try {
-      const state = {
-        curriculum: {
-          ...get(curriculumStore),
-          courses: serializeCourses(get(curriculumStore).courses)
+      const curriculum = get(curriculumStore);
+      const graph = get(graphStore);
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        curriculum: { ...curriculum, courses: curriculum.courses.map(serializeCourse) },
+        graph: {
+          ...graph,
+          nodes: graph.nodes.map(serializeNode),
+          edges: graph.edges.map(serializeEdge)
         },
-        graph: get(graphStore),
         csv: get(csv),
         timestamp: Date.now()
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }));
     } catch (error) {
       console.error('Failed to save state:', error);
     }
@@ -75,14 +146,21 @@ export const storageManager = {
       if (!saved) return false;
 
       const state = JSON.parse(saved);
-      curriculumStore.set({
-        ...state.curriculum,
-        courses: deserializeCourses(state.curriculum.courses)
-      });
+      const courses = deserializeCourses(state.curriculum.courses, state.curriculum.modules);
+      const courseMap = buildMap(courses, c => c.id);
+      const moduleMap = buildMap(state.curriculum.modules, m => m.code);
 
-      if (state.graph) graphStore.set(state.graph);
+      curriculumStore.set({ ...state.curriculum, courses });
+
+      if (state.graph) {
+        graphStore.set({
+          ...state.graph,
+          nodes: state.graph.nodes.map((n: any) => deserializeNode(n, courseMap, moduleMap)),
+          edges: state.graph.edges.map((e: any) => deserializeEdge(e, courseMap))
+        });
+      }
+
       csv.set(state.csv);
-
       return true;
     } catch (error) {
       console.error('Failed to load state:', error);
@@ -97,7 +175,6 @@ export const storageManager = {
   clear() {
     try {
       autoSaveEnabled = false;
-
       localStorage.removeItem(STORAGE_KEY);
 
       curriculumStore.set({
@@ -121,7 +198,7 @@ export const storageManager = {
 
       csv.set(undefined);
       resetKey.update(n => n + 1);
-      setTimeout(() => { autoSaveEnabled = true; }, 100);
+      setTimeout(() => autoSaveEnabled = true, 100);
     } catch (error) {
       console.error('Failed to clear state:', error);
       autoSaveEnabled = true;

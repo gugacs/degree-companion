@@ -1,7 +1,40 @@
+<!-- ================================================================ -->
+<!-- ==============CURRICULUM VALIDATION FOR ONBOARDING============== -->
+<!-- ================================================================ -->
+<script lang="ts" context="module">
+  import type { Curriculum } from '$lib/types/data';
+
+  export function isOnboardingComplete(curriculum: Curriculum): boolean {
+    if (!curriculum.credits || !curriculum.degreeType || !curriculum.startSemester) {
+      return false;
+    }
+    if (curriculum.degreeType === 'bachelor') {
+      return curriculum.modules.every(m => m.credits && m.credits > 0);
+    }
+    if (curriculum.degreeType === 'master') {
+      return !!(
+        curriculum.majorModule && 
+        curriculum.minorModule && 
+        curriculum.modules.find(m => m.code === curriculum.majorModule && m.credits > 0) &&
+        curriculum.modules.find(m => m.code === curriculum.minorModule && m.credits > 0)
+      );
+    }
+    return false;
+  }
+</script>
+
+<!-- ================================================================ -->
+<!-- =======================ONBOARDING MODULE======================== -->
+<!-- ================================================================ -->
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { onDestroy } from 'svelte';
+  import { get } from 'svelte/store';
   import {ArrowLeft, ArrowRight} from '@lucide/svelte';
   import { curriculumStore } from '$lib/states/curriculum.svelte';
+  import { storageManager } from '$lib/services/storageManager';
+
+  onDestroy(() => { if (!isOnboardingComplete(get(curriculumStore))) { storageManager.clear(); }});
 
   let degreeType: 'bachelor' | 'master' = 'bachelor';
   let startSemester: 'winter' | 'summer' = 'winter';

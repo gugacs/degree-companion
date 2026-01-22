@@ -1,7 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { get } from 'svelte/store';
   import { storageManager } from '$lib/services/storageManager';
+  import { isOnboardingComplete } from './onboarding/+page.svelte';
   import Dropzone from "$lib/components/Dropzone.svelte";
   import { invoke } from "@tauri-apps/api/core";
   import CourseListTable from "$lib/components/CourseListTable.svelte";
@@ -18,13 +20,11 @@
   }
 
   onMount(async () => {
-    const hasData = storageManager.hasState();
-    if (hasData) {
+    if (storageManager.hasState()) {
       storageManager.load();
 
       // Check if the loaded curriculum actually has courses and data etc
-      const curriculum = $curriculumStore;
-      if (curriculum.courses && curriculum.courses.length > 0) {
+      if (isOnboardingComplete(get(curriculumStore))) {
         await goto('/graph');
       } else {
         storageManager.clear(); // Clear the stores
