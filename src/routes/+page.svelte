@@ -5,6 +5,7 @@
   import Dropzone from "$lib/components/Dropzone.svelte";
   import { invoke } from "@tauri-apps/api/core";
   import CourseListTable from "$lib/components/CourseListTable.svelte";
+  import { curriculumStore } from '$lib/states/curriculum.svelte';
 
   let name = $state("");
   let greetMsg = $state("");
@@ -20,7 +21,14 @@
     const hasData = storageManager.hasState();
     if (hasData) {
       storageManager.load();
-      await goto('/graph');
+
+      // Check if the loaded curriculum actually has courses
+      const curriculum = $curriculumStore;
+      if (curriculum.courses && curriculum.courses.length > 0) {
+        await goto('/graph');
+      } else {
+        storageManager.clear(); // Empty state, clear it
+      }
     }
     isCheckingStorage = false;
   });

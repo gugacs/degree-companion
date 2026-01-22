@@ -2,14 +2,33 @@
   import CurriculumTree from "$lib/components/CurriculumTree.svelte";
   import Legend from "$lib/components/Legend.svelte";
   import {ArrowLeft} from '@lucide/svelte';
+  import { storageManager } from '$lib/services/storageManager';
+  import { curriculumStore, csv } from '$lib/states/curriculum.svelte';
 
+  function handleBackClick() {
+    // Clear the stores
+    curriculumStore.set({
+      credits: 0,
+      modules: [],
+      courses: [],
+      degreeType: 'bachelor',
+      startSemester: 'winter',
+      majorModule: '',
+      minorModule: ''
+    });
+    csv.set(undefined);
+
+    // Clear localStorage
+    storageManager.clear();
+  }
 </script>
 
 
 <div class="graph-wrapper">
   <div class="header">
     <a href="/"
-       class="back-button">
+       class="back-button"
+       on:click={handleBackClick}>
       <ArrowLeft size="0.9rem"/>
       Back to data drop
     </a>
