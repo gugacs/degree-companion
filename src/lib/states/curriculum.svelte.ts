@@ -1,4 +1,4 @@
-import type { Curriculum } from "$lib/types/data";
+import type { Curriculum, Graph } from "$lib/types/data";
 import { writable } from "svelte/store";
 import { storageManager } from "$lib/services/storageManager";
 
@@ -14,7 +14,18 @@ export const curriculumStore = writable<Curriculum>({
   minorModule: ''
 });
 
-// Auto-save functionality
+export const graphStore = writable<Graph>({
+  nodes: [],
+  edges: [],
+  strokeWidth: 2,
+  strokeColor: '#000000',
+  semesterCount: 0,
+  courseCardStates: {}
+});
+
+//===========================================================
+//==================AUTO SAVE FUNCT.=========================
+//===========================================================
 if (typeof window !== 'undefined') {
   let saveTimeout: ReturnType<typeof setTimeout>;
 
@@ -26,5 +37,6 @@ if (typeof window !== 'undefined') {
   };
 
   curriculumStore.subscribe(debouncedSave);
+  graphStore.subscribe(debouncedSave);
   csv.subscribe(debouncedSave);
 }

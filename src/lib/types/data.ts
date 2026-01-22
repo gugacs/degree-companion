@@ -37,3 +37,16 @@ export interface Curriculum {
   majorModule: string;  // Module code
   minorModule: string;  // Module code
 }
+
+export interface Graph {
+  nodes: any[];
+  edges: any[];
+  strokeWidth: number;
+  strokeColor: string;
+  semesterCount: number;
+  courseCardStates: Record<string, {
+    color: string;
+    isWorkButtonActive: boolean;
+    isDoneButtonActive: boolean;
+  }>;
+}
