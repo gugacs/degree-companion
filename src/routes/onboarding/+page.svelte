@@ -1,7 +1,40 @@
+<!-- ================================================================ -->
+<!-- ==============CURRICULUM VALIDATION FOR ONBOARDING============== -->
+<!-- ================================================================ -->
+<script lang="ts" context="module">
+  import type { Curriculum } from '$lib/types/data';
+
+  export function isOnboardingComplete(curriculum: Curriculum): boolean {
+    if (!curriculum.credits || !curriculum.degreeType || !curriculum.startSemester) {
+      return false;
+    }
+    if (curriculum.degreeType === 'bachelor') {
+      return curriculum.modules.every(m => m.credits && m.credits > 0);
+    }
+    if (curriculum.degreeType === 'master') {
+      return !!(
+        curriculum.majorModule && 
+        curriculum.minorModule && 
+        curriculum.modules.find(m => m.code === curriculum.majorModule && m.credits > 0) &&
+        curriculum.modules.find(m => m.code === curriculum.minorModule && m.credits > 0)
+      );
+    }
+    return false;
+  }
+</script>
+
+<!-- ================================================================ -->
+<!-- =======================ONBOARDING MODULE======================== -->
+<!-- ================================================================ -->
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { onDestroy } from 'svelte';
+  import { get } from 'svelte/store';
   import {ArrowLeft, ArrowRight} from '@lucide/svelte';
   import { curriculumStore } from '$lib/states/curriculum.svelte';
+  import { storageManager } from '$lib/services/storageManager';
+
+  onDestroy(() => { if (!isOnboardingComplete(get(curriculumStore))) { storageManager.clear(); }});
 
   let degreeType: 'bachelor' | 'master' = 'bachelor';
   let startSemester: 'winter' | 'summer' = 'winter';
@@ -216,19 +249,20 @@
   /* CSS Custom Colour Properties */
   :root {
     --color-primary: #007bff;
+    --color-white: #ffffff;
     --color-text: light-dark(#0f0f0f, #f6f6f6);
     --color-text-muted: #7f8c8d;
-    --color-border: light-dark(#e0e0e0, #4a4a4a);
-    --color-border-hover: light-dark(#999, #999);
-    --color-bg-card: light-dark(#fff, #3a3a3a);
+    --color-border: light-dark(#d3d3d3, #4a4a4a);
+    --color-border-hover: light-dark(#999999, #999999);
+    --color-bg-card: light-dark(#ffffff, #3a3a3a);
     --color-bg-main: light-dark(#f6f6f6, #2f2f2f);
     --color-bg-hover: light-dark(#f0f8ff, #1a3a5a);
     --color-bg-selected: light-dark(#e3f2fd, #1a3a5a);
     --color-bg-module: light-dark(#f8f9fa, #2a2a2a);
     --color-bg-radio: light-dark(#fafafa, #2a2a2a);
-    --color-disabled: light-dark(#bbb, #666);
+    --color-disabled: light-dark(#bbbbbb, #666666);
     --shadow-sm: 0 0.25rem 0.375rem light-dark(rgba(0, 0, 0, 0.07), rgba(0, 0, 0, 0.2));
-    --shadow-focus: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    --shadow-focus: 0 0 0 0.1875rem rgba(0, 123, 255, 0.1);
     --shadow-btn: 0 0.25rem 0.375rem rgba(0, 123, 255, 0.3);
     --shadow-btn-hover: 0 0.375rem 0.75rem rgba(0, 123, 255, 0.4);
   }
@@ -244,31 +278,47 @@
     line-height: 1.5;
   }
 
-  /* Back Button */
-  .back-btn {
-    position: fixed;
-    top: 2rem;
-    left: 2rem;
+  /* Button Styles */
+  .back-btn,
+  .submit-btn {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    background: var(--color-bg-card);
-    border: 1px solid var(--color-border);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-white);
+    background: var(--color-primary);
+    border: none;
     border-radius: 1rem;
     cursor: pointer;
-    font-size: 1rem;
     transition: all 0.2s;
-    z-index: 100;
-    font-weight: 600;
+    box-shadow: var(--shadow-btn);
     text-decoration: none;
-    color: white;
-    background-color: #007bff;
   }
 
-  .back-btn:hover {
-    border-color: var(--color-border-hover);
-    transform: translateX(-0.125rem);
+  .back-btn:hover,
+  .submit-btn:hover:not(:disabled) {
+    transform: translateY(-0.125rem);
+    box-shadow: var(--shadow-btn-hover);
+  }
+
+  /* Back Button Specific */
+  .back-btn {
+    position: fixed;
+    top: 2rem;
+    left: 2rem;
+    z-index: 100;
+  }
+
+  /* Submit Button Specific */
+  .submit-btn {
+    margin: 2rem auto 0;
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   /* Content Container */
@@ -306,6 +356,7 @@
   /* Form Container */
   form {
     background: var(--color-bg-card);
+    border: 0.1875rem solid var(--color-border);
     border-radius: 1rem;
     padding: 2.5rem;
     box-shadow: var(--shadow-sm);
@@ -329,7 +380,7 @@
   .radio-card {
     position: relative;
     padding: 1.5rem;
-    border: 2px solid var(--color-border);
+    border: 0.125rem solid var(--color-border);
     border-radius: 0.75rem;
     cursor: pointer;
     transition: all 0.2s;
@@ -405,7 +456,7 @@
   select, input[type="number"] {
     width: 100%;
     padding: 0.5rem 0.75rem;
-    border: 2px solid var(--color-border);
+    border: 0.125rem solid var(--color-border);
     border-radius: 0.5rem;
     background: var(--color-bg-card);
     color: inherit;
@@ -463,7 +514,7 @@
     padding: 1rem;
     background: var(--color-bg-module);
     border-radius: 0.5rem;
-    border: 1px solid var(--color-border);
+    border: 0.125rem solid var(--color-border);
     margin-bottom: 1rem;
   }
 
@@ -490,32 +541,6 @@
 
   /* Disabled State */
   input:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  /* Submit Button */
-  .submit-btn {
-    display: block;
-    margin: 2rem auto 0;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    color: white;
-    background: var(--color-primary);
-    border: none;
-    border-radius: 1rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: var(--shadow-btn);
-  }
-
-  .submit-btn:hover:not(:disabled) {
-    transform: translateY(-0.2rem);
-    box-shadow: var(--shadow-btn-hover);
-  }
-
-  .submit-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }

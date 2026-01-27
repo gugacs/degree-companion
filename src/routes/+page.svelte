@@ -1,23 +1,50 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
+  import { get } from 'svelte/store';
+  import { storageManager } from '$lib/services/storageManager';
+  import { isOnboardingComplete } from './onboarding/+page.svelte';
   import Dropzone from "$lib/components/Dropzone.svelte";
   import { invoke } from "@tauri-apps/api/core";
   import CourseListTable from "$lib/components/CourseListTable.svelte";
+  import { curriculumStore } from '$lib/states/curriculum.svelte';
 
   let name = $state("");
   let greetMsg = $state("");
+  let isCheckingStorage = $state(true);
 
   async function greet(event: Event) {
     event.preventDefault();
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
     greetMsg = await invoke("greet", { name });
   }
+
+  onMount(async () => {
+    if (storageManager.hasState()) {
+      storageManager.load();
+
+      // Check if the loaded curriculum actually has courses and data etc
+      if (isOnboardingComplete(get(curriculumStore))) {
+        await goto('/graph');
+      } else {
+        storageManager.clear(); // Clear the stores
+      }
+    }
+    isCheckingStorage = false;
+  });
 </script>
 
-<main class="container">
-  <h1>Degree Companion</h1>
-  <Dropzone />
-  <CourseListTable />
-</main>
+{#if isCheckingStorage}
+  <div class="loading">
+    <h2>Loading...</h2>
+  </div>
+{:else}
+  <main class="container">
+    <h1>Degree Companion</h1>
+    <Dropzone />
+    <CourseListTable />
+  </main>
+{/if}
 
 <style>
 :root {
@@ -37,12 +64,23 @@
 }
 
 .container {
-  margin: 0;
-  padding-top: 10vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
+  min-height: 80vh;
+  width: 100%;
+  margin: 0;
   text-align: center;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 h1 {
@@ -55,5 +93,4 @@ h1 {
     background-color: #2f2f2f;
   }
 }
-
 </style>

@@ -1,6 +1,6 @@
 [package]
 name = "degree-companion"
-version = "0.2.0"
+version = "0.3.0"
 description = "Simple desktop app to allow students to plan their academic journey in a simplified and understandable manner."
 authors = ["Christian Burtscher", "Jonas Glaser", "Marcus Gugacs", "Eva Haring"]
 edition = "2021"
@@ -23,3 +23,4 @@ tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tauri-plugin-fs = "2"
+tauri-plugin-dialog = "2"
