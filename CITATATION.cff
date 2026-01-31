@@ -1,0 +1,29 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Degree Companion
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Christian
+    family-names: Burtscher
+    affiliation: Graz University of Technology
+  - given-names: Jonas
+    family-names: Glaser
+    affiliation: Graz University of Technology
+  - given-names: Marcus
+    family-names: Gugacs
+    affiliation: Graz University of Technology
+  - given-names: Eva
+    family-names: Haring
+    affiliation: Graz University of Technology
+repository-code: 'https://github.com/gugacs/degree-companion'
+repository-artifact: 'https://github.com/gugacs/degree-companion/releases'
+abstract: >-
+  Simple web app to allow students to plan their academic
+  journey in a simplified and understandable manner.
+license: MIT
+version: 0.3.0
